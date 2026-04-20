@@ -1,0 +1,2706 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Baraga Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.232969, 46.933955] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Campbell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.330491, 37.238435] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Juan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-107.62425, 36.219799] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grand Traverse Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.640216, 44.775051] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lafourche Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.029466, 29.432015] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Seminole Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.022121, 31.07548] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grant Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.973529, 31.708922] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Iberia Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.000371, 29.613143] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Harris Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.688349, 29.710862] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Shelby Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.511431, 31.973984] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Williamson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.20507, 35.914639] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-71.58955, 41.196557] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Scott Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.771308, 36.79988] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.740594, 38.352415] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Carolina Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.036559, 18.450216] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kearney Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.723948, 40.350391] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ste. Genevieve Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.110537, 37.67134] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wibaux Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-104.045271, 46.641449] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Anchorage Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-149.736395, 60.994692] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lawrence Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.974586, 31.761655] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Waupaca Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.606083, 44.590515] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Saline Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.913493, 40.697948] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Eddy Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.265846, 47.587618] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fisher Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.146543, 32.522793] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Polk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.818903, 28.361712] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bradley Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.703607, 35.241043] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clinton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.988613, 39.444397] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Malheur Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-116.961535, 43.918388] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fairfield Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-73.517473, 41.666646] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.920819, 35.291868] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Saline Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.245818, 34.493506] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sheridan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-106.009676, 44.563981] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gilliam Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-120.653559, 45.737237] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-72.578161, 44.781578] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lawrence Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.573548, 38.992147] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Evangeline Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.630347, 30.487873] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sharkey Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.701845, 33.096294] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sutton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.960587, 30.706071] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dukes Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-70.6948, 41.52564] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Linn Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.266968, 39.703562] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Queens Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-73.868917, 40.69515] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gilpin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.397849, 39.912886] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lancaster Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.091764, 40.277692] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lawrence Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.974586, 31.761655] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Meagher Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-110.28186, 46.18421] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Butte Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-121.076695, 39.597264] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "St. Louis Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.191501, 46.672586] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stephens Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.142148, 34.506994] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vermilion Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.526379, 40.491237] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Culpeper Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.935454, 38.695853] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Antelope Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.300592, 42.088853] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Boulder Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.055089, 40.261793] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.920819, 35.291868] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wheeler Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.29576, 41.741178] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hyde Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.663508, 44.217517] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clarke Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.944233, 31.989872] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vernon Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.312404, 43.640988] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cottonwood Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.859388, 43.848093] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hot Spring Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.793197, 34.503606] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Giles Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.828301, 35.263677] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Campbell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.004317, 36.270378] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.372198, 41.874122] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.788941, 39.653001] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Red River Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.746096, 33.703016] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Newport News Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.581575, 37.212845] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lewis Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.455887, 39.945538] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gallia Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.139279, 38.866407] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Page Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.914896, 40.575068] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fulton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.880387, 41.720086] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clarke Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.910459, 31.826649] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Reno Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.472257, 37.824497] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clark Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.558068, 36.999528] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Westmoreland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.703834, 40.443526] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hardin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.258111, 34.995463] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pope Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.490297, 37.066669] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sanders Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-116.048421, 47.97682] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Iosco Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.318216, 44.511734] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Aiken Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.522124, 33.825522] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grenada Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.136787, 33.721648] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "La Salle Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.196131, 31.477877] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "McPherson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.717466, 45.593428] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Buchanan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.596981, 42.296408] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stark Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.638864, 41.233862] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Union Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.814129, 39.72662] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Starr Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.32067, 26.783081] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Floyd Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.816164, 38.282969] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sussex Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.398498, 36.992985] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Newton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.068898, 36.747818] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Estill Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.90557, 37.542856] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Allamakee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.217706, 43.50055] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cotton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.16912, 34.114171] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "White Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.951715, 38.239632] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clay Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.273571, 40.350359] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Norfolk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.177019, 36.92929] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.628371, 41.585014] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Newton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.682196, 33.52622] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.401784, 37.730658] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Douglas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-124.218876, 43.610319] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dallas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.838963, 32.987521] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Culpeper Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.935454, 38.695853] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cocke Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.276677, 36.007652] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wabaunsee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.352613, 38.739021] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Storey Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-119.283637, 39.621561] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Orleans Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.995665, 43.287448] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Warren Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.720102, 32.618858] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mayagüez Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-67.187873, 18.266874] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bolivar Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.232295, 33.552788] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Camas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.374877, 43.199603] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Boyd Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.254454, 42.99814] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Doña Ana Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-106.377174, 32.00149] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bent Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.403592, 37.792397] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Loíza Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-65.992793, 18.458102] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pope Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.490297, 37.066669] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Garfield Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.462459, 36.593627] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fulton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.215267, 40.713598] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Adjuntas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.670494, 18.152831] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.888334, 38.734443] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lake Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.187383, 47.138192] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grayson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.922114, 33.959579] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Milam Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.829121, 31.105871] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.040528, 43.542361] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Camden Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.406872, 37.977802] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Muskegon Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.462195, 43.472328] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Berkeley Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.446699, 33.213458] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pierce Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-122.4442, 47.266723] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.910836, 35.759752] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fayette Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.607059, 42.643973] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Golden Valley Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-108.78014, 46.132402] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pierce Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.765461, 44.836202] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sagadahoc Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-70.051824, 43.990982] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Robertson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.930348, 38.492278] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gates Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.541687, 36.550312] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.495529, 35.285472] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "New Castle Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-75.564927, 39.583248] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Adams Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.802936, 40.922568] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Oldham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.042377, 35.183156] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Linn Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.266968, 39.703562] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tillman Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.952527, 34.195621] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Delaware Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.44433, 40.37914] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.354163, 29.561459] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Brown Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.788941, 39.653001] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wilkinson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.15815, 31.346695] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "LaGrange Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.65975, 41.759101] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Calhoun Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.145562, 33.679098] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sully Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.676398, 44.548111] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Edmonson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.469126, 37.321099] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Custer Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.812434, 44.808138] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Garrett Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.067072, 39.474658] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pacific Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-123.358247, 46.384227] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Holmes Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.331589, 33.302825] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marion Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.544036, 34.219676] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "La Crosse Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.151843, 44.079656] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tama Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.298164, 41.862779] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Warren Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.402653, 41.625968] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Payne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.140583, 35.941991] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Niobrara Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-104.655639, 42.609468] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Warren Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.046202, 36.544168] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pushmataha Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.779376, 34.156699] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Island Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-122.397349, 47.912401] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kenosha Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.812632, 42.547562] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Newberry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.338961, 34.197587] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pennington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.500843, 48.174108] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Claiborne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.880805, 32.585277] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Escambia Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.919292, 30.370675] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Linn Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-123.260338, 44.555391] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "King Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.518691, 33.83565] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rio Arriba Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-107.62425, 36.219799] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Atkinson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.971247, 31.183988] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "McCormick Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.046974, 33.95321] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cumberland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.45183, 36.938138] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mifflin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.667819, 40.735335] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "La Crosse Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.151843, 44.079656] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marshall Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.550166, 34.545963] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hampton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.39447, 37.106248] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bartholomew Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.952005, 39.347373] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Robertson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.930348, 38.492278] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "McDonald Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.618019, 36.667921] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.995591, 43.365293] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rockingham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-70.819549, 43.123231] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Costilla Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.155042, 36.995339] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marshall Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.978778, 45.935937] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grand Traverse Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.640216, 44.775051] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stutsman Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.467476, 47.240453] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mason Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.706043, 38.637101] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sumter Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.26906, 34.0351] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Crook Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-104.05581, 44.691343] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lorain Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.96813, 41.506422] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.736319, 38.466645] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marion Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.277594, 32.880532] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ralls Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.715247, 39.657644] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Shenandoah Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.869276, 38.762991] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Geary Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.755786, 39.088006] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Colfax Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.90591, 41.456436] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rosebud Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-107.781214, 46.496014] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Boone Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.70738, 42.493587] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Greenlee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-109.047117, 32.777569] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Suwannee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.247253, 30.26067] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pierce Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.492919, 48.370946] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Chilton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.517344, 33.020566] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rowan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.757239, 35.616265] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mason Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.199556, 40.183945] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fairfax Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.088047, 38.824973] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wabash Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.651529, 38.568166] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stafford Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.634835, 38.409713] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Green Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.657332, 37.421996] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sullivan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.447597, 41.275629] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Thomas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.083753, 30.675954] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Baltimore Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.618612, 39.237398] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Elko Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.041723, 41.99372] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fauquier Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.663346, 38.752917] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Webster Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.088446, 33.533202] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sumner Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.147721, 36.999111] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jasper Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.321127, 31.885149] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Howard Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.291419, 41.393894] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clinton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.988613, 39.444397] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tallapoosa Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.886148, 32.493053] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Randolph Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.643482, 33.495885] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Adjuntas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.670494, 18.152831] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Warren Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.402653, 41.625968] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.355269, 34.22373] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Caldwell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.801046, 37.379445] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wayne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.702391, 38.256661] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lake of the Woods Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.431854, 48.706588] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gurabo Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.021747, 18.305034] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pulaski Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.720712, 37.238328] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Orange Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-118.093008, 33.786289] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lunenburg Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.443319, 37.0794] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Crenshaw Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.193951, 31.440072] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gibson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.462892, 38.533519] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Edgefield Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.651759, 33.81451] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Florence Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.425302, 45.722426] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hidalgo Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.861875, 26.348156] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dakota Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.635982, 42.524324] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Beaverhead Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.83134, 44.38166] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Prairie Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.465114, 35.089454] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Johnson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-106.078068, 43.494471] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Perry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.083942, 40.30122] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Catron Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-108.000597, 33.201563] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Brantley Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.936006, 31.047993] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Henry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.228222, 41.165862] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Weber Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-111.885476, 41.426435] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dakota Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.635982, 42.524324] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Thomas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.083753, 30.675954] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Trousdale Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.174666, 36.328] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Austin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.62198, 30.044283] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Floyd Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.069159, 34.587184] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Benton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.759435, 45.559646] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Queens Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-73.868917, 40.69515] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Braxton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.881232, 38.507045] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cherokee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.321869, 34.988408] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Richland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.953898, 38.570094] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lewis Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.339232, 35.65911] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clinton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.367795, 43.117938] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lenoir Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.747639, 35.071354] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "McHenry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.971325, 47.848703] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.617346, 40.396004] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Holmes Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.331589, 33.302825] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dorchester Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.048373, 38.12055] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Carroll Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.179177, 35.816785] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Oklahoma Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.264992, 35.377368] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pemiscot Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.545006, 36.336809] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Union Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.805682, 43.08367] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Greene Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.452918, 38.475508] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Towns Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.780401, 34.792893] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Morgan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.844863, 39.450216] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kent Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-75.747671, 39.143345] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washita Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.621054, 35.097352] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rio Grande Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-106.710775, 37.404228] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Richland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.747337, 33.761742] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.311851, 32.277441] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cochran Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.047346, 33.824675] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Coweta Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.939015, 33.224693] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cumberland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.012121, 39.378968] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stewart Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.602597, 36.418979] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fayette Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.642786, 35.04486] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Albemarle Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.208092, 38.13315] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Boone Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.70738, 42.493587] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Patricio Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.541071, 28.164669] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Miller Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.604976, 38.156815] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wright Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.521653, 45.246618] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Terrell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.761839, 29.777187] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washoe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-119.360177, 41.994384] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rutherford Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.417189, 36.041517] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Conejos Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.71847, 36.995846] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Douglas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.251359, 37.059653] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Drew Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.975844, 33.704414] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Amherst Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.183302, 37.465908] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clatsop Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-123.96934, 45.783197] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Winn Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.362608, 31.796633] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bingham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.697408, 43.623011] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Yankton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.637496, 43.16877] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Montgomery Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.096708, 30.167214] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Black Hawk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.064766, 42.297259] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grundy Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.36314, 41.11158] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Manassas Park Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.475711, 38.781214] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hendricks Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.326576, 39.682896] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lander Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-117.300597, 40.526136] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.945571, 41.163578] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Broward Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.278764, 25.970968] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rice Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.281521, 44.543957] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clinton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.242743, 40.215834] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Robertson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.913233, 36.382621] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Logan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.802937, 37.660508] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Flathead Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-113.34947, 48.310155] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.719979, 33.81133] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Burt Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.444785, 41.683633] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Moore Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.525306, 35.354718] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pierce Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.417246, 31.417119] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Río Grande Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-65.828457, 18.423543] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clay Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.57618, 36.498446] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Benton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.831089, 42.299063] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "St. Joseph Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.724534, 41.759085] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "St. Croix Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.765898, 45.210173] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wayne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.785341, 36.603372] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Danville Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.470047, 36.541025] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Duchesne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-110.857902, 39.812428] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cedar Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.163082, 42.793385] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.056276, 34.336605] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Osceola Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.08704, 44.164239] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Montague Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.484071, 33.91568] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Benito Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-121.581354, 36.899152] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Potter Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.599278, 41.542271] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Allen Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.597402, 30.583928] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Henry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.856902, 41.408836] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.081564, 39.634728] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Perry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.521523, 37.566208] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Quitman Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.062246, 31.991857] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Columbia Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.238607, 33.017992] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Parker Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.544181, 32.994177] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Jacinto Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.849414, 30.493553] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Brown Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.118665, 32.079585] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Loup Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.222733, 42.087916] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Arlington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.032986, 38.8395] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.705701, 40.001366] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lamar Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.857738, 33.461722] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Haskell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.349233, 35.058514] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lawrence Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.573548, 38.992147] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.375269, 43.500322] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jasper Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.129632, 31.09928] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pecos Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.01104, 31.371306] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Orleans Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.124775, 29.975791] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Anne Arundel Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.438845, 39.0529] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Beaverhead Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.83134, 44.38166] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Washington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-67.619761, 44.519754] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.698961, 38.474914] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Seneca Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.96335, 42.90302] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Person Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.7963, 36.541713] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Talladega Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.17437, 33.104394] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Charles Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.125191, 38.619096] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pasco Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.678743, 28.433456] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.640652, 36.856139] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-97.024461, 30.051435] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Adams Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.706547, 39.739894] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Germán Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-67.086698, 18.15199] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marion Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.819723, 38.522464] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Delaware Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-75.562539, 39.901638] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Scott Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.898373, 41.771392] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Woodson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.960876, 37.734304] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marshall Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.765999, 41.862373] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Transylvania Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.764464, 35.068177] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cabo Rojo Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-67.100492, 18.106395] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Calhoun Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.01233, 33.88008] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Brown Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.788941, 39.653001] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hampden Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-72.141843, 42.160898] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Madison Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.730016, 32.884773] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Baldwin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.159585, 33.002803] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kidder Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.915508, 46.632925] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tallahatchie Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.926099, 33.897957] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Whitley Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.651928, 41.294776] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Prairie Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.465114, 35.089454] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sarasota Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.171655, 27.032769] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Avoyelles Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.815258, 30.848107] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hopkins Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.862521, 32.979571] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Blaine Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.636899, 36.164894] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.828026, 36.411836] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Northampton Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-75.937665, 37.549652] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Choctaw Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.108824, 33.215886] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Huntingdon Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.116521, 40.739127] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Guánica Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.884653, 18.024816] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Carroll Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.866758, 36.498789] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Marion Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.937587, 39.927137] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Little River Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.04345, 33.552253] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.824523, 34.074948] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cass Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.154722, 41.505211] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pennington Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-104.055104, 43.853478] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cheyenne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.411043, 40.002365] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Columbus Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.710141, 33.994688] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Rooks Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.591776, 39.132357] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vega Baja Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.438813, 18.485713] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Orange Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.901452, 30.242672] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Audrain Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.314471, 39.246454] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jackson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.228179, 43.389185] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jefferson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-87.023586, 33.246422] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Martin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.497358, 37.945338] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kitsap Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-122.749199, 47.741063] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Guadalupe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.312968, 34.34672] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Perry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.544341, 34.953319] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Polk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.890671, 47.672153] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "New York Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-74.04086, 40.700117] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Liberty Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.165897, 30.344976] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Andrews Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-102.287048, 32.086991] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Carson City Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-120.004504, 39.165599] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Nelson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.171926, 37.803135] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dent Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.528797, 37.788989] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Oldham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.042377, 35.183156] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ketchikan Gateway Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-131.246018, 54.989555] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pike Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.313162, 39.684907] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Irwin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.500702, 31.59399] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Windham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-72.86418, 42.737117] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Somerset Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.768593, 40.243441] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grundy Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.53351, 42.297001] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Warren Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.445506, 40.627843] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Worth Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.939437, 31.847929] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Piscataquis Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-69.232021, 45.090166] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Loudon Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.166267, 35.805106] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Putnam Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.341602, 41.165524] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Camden Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.906014, 30.822176] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Broomfield Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.147342, 39.913886] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pike Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.369371, 31.000335] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Scurry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.03866, 32.970225] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Chatham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.004115, 32.072225] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Antrim Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.332836, 44.812372] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "St. Landry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.493259, 30.480499] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mercer Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.764392, 46.981306] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Suffolk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-71.042794, 42.276998] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dawson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.258075, 34.335156] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Coconino Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.538593, 37.000674] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Loudoun Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.655081, 38.942635] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hancock Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.501435, 40.248874] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Nolan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.665353, 32.085407] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Piatt Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.462207, 39.879092] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pitkin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-107.394486, 39.256299] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Yellow Medicine Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.451761, 44.63135] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ector Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-102.799086, 32.085795] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Custer Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.22183, 41.740792] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lincoln Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.043414, 45.555082] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Keith Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.98463, 41.394712] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-72.578161, 44.781578] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Richland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.739054, 46.543708] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "La Paz Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.627125, 33.433554] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Itasca Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.416279, 47.444828] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Utuado Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-66.670494, 18.152831] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Clay Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.335213, 39.183337] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dent Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.528797, 37.788989] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "New Kent Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.228504, 37.536398] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hancock Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.519054, 40.517922] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cheyenne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-103.382493, 41.001883] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Douglas Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.212392, 46.649941] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Spalding Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.502352, 33.221055] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Williamson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.708546, 37.599277] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Grenada Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.136787, 33.721648] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Liberty Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.19438, 31.568101] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ringgold Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.015492, 40.573914] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Charleston Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-79.446699, 33.213458] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Randolph Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.643482, 33.495885] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hutchinson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.086068, 35.625267] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Indiana Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.846656, 40.635638] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cheboygan Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.732388, 45.787928] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Calhoun Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.350432, 33.298941] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tyrrell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-76.045987, 35.666117] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hancock Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.052197, 33.080682] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Montgomery Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-95.522415, 36.999281] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bolivar Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.232295, 33.552788] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.255777, 26.703437] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Assumption Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.224356, 30.025336] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Atascosa Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-98.800841, 28.647487] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Waldo Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-68.942826, 44.281073] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Frontier Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.197807, 40.350027] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Montgomery Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.977924, 38.192118] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Black Hawk Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.064766, 42.297259] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Peoria Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-89.986068, 40.712257] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hooker Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-101.406466, 41.7432] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Graham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.029033, 35.291049] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Franklin Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.815555, 39.511052] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Greenwood Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.870084, 34.135357] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hocking Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.374531, 39.654959] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Medina Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-81.973895, 41.199831] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Parmer Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-102.525184, 34.746931] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Allegany Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-78.468639, 39.516789] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Chase Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-96.35378, 38.521657] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Terry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-102.20852, 32.958956] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Knox Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.474498, 33.733849] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Albany Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-105.28391, 42.431402] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sabine Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.039034, 31.134271] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Renville Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-102.021144, 48.999015] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Real Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.757621, 30.074132] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Boone Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.242365, 40.180778] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Surry Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-80.837954, 36.559131] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Le Sueur Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-93.646696, 44.195993] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kauai Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-160.555771, 21.668287] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cass Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.04299, 33.271243] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Henderson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-88.241677, 35.423263] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Graham Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.029033, 35.291049] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jay Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.804119, 40.352757] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Greene Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-94.397526, 42.209161] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Christian Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-92.909336, 36.809178] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dale Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.416437, 31.619466] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "St. John the Baptist Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-90.641998, 30.16643] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lee Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-91.409324, 40.812682] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dewey Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.381022, 36.012925] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Edwards Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-100.381329, 30.288984] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Cumberland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.680633, 35.908454] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Swain Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-83.662957, 35.569138] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mitchell Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-82.416857, 36.072885] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hart Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-86.047598, 37.449933] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Greensville Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-77.658036, 36.894514] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Real Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-99.757621, 30.074132] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Wayne Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.785341, 36.603372] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monroe Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-85.788613, 36.621845] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Defiance Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-84.803926, 41.367959] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Fremont Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-121.9886, 37.5483] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Jose Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-121.8863, 37.3382] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Oakland Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-122.2712, 37.8044] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Stockton Processing" },
+      "geometry": { "type": "Point", "coordinates": [-121.2908, 37.9577] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Modesto Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-120.9969, 37.6391] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fresno Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-119.7871, 36.7378] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bakersfield Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-119.0187, 35.3733] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Riverside Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-117.3962, 33.9533] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Bernardino Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-117.2898, 34.1083] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ontario Logistics Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-117.6509, 34.0633] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Long Beach Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-118.1937, 33.7701] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Anaheim Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-117.9145, 33.8366] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Irvine Tech Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-117.8265, 33.6846] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Oxnard Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-119.1771, 34.1975] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ventura Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-119.229, 34.2746] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Las Vegas Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-115.1398, 36.1699] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Henderson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-114.9817, 36.0395] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Reno Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-119.8138, 39.5296] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sparks Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-119.7527, 39.5349] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Phoenix Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.074, 33.4484] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mesa Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-111.8315, 33.4152] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Chandler Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-111.8413, 33.3062] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tempe Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-111.94, 33.4255] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Glendale Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-112.185, 33.5387] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Tucson Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-110.9747, 32.2226] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "Salt Lake City Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-111.891, 40.7608] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "West Valley Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-112.0011, 40.6916] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Provo Manufacturing" },
+      "geometry": { "type": "Point", "coordinates": [-111.6585, 40.2338] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ogden Industrial" },
+      "geometry": { "type": "Point", "coordinates": [-111.9738, 41.223] }
+    }
+  ]
+}
