@@ -17,11 +17,12 @@
 DROP TABLE IF EXISTS regions_metrics;
 
 CREATE TABLE regions_metrics (
-  fips           TEXT             PRIMARY KEY,
-  population     DOUBLE PRECISION NOT NULL,
-  median_income  DOUBLE PRECISION NOT NULL,
-  business_count DOUBLE PRECISION NOT NULL
-  -- No score column. Computed dynamically in server.js
+  fips               TEXT             PRIMARY KEY,
+  population       DOUBLE PRECISION NOT NULL,
+  median_income    DOUBLE PRECISION NOT NULL,
+  business_count   DOUBLE PRECISION NOT NULL,
+  transit_agencies DOUBLE PRECISION NOT NULL DEFAULT 0
+  -- Scores computed dynamically in server.js (incl. transit density per 100k residents).
 );
 
 -- =============================================================================
@@ -47,9 +48,10 @@ CREATE TABLE IF NOT EXISTS scoring_weights (
   weight      DOUBLE PRECISION NOT NULL CHECK (weight >= 0)
 );
 
--- Seed default equal weights. This is skipped if rows already exist
+-- Seed default weights (existing DBs keep prior rows; new metric added separately).
 INSERT INTO scoring_weights (metric_name, weight) VALUES
-  ('population',     0.33),
-  ('median_income',  0.33),
-  ('business_count', 0.33)
+  ('population',       0.30),
+  ('median_income',    0.30),
+  ('business_count',   0.30),
+  ('transit_density',  0.10)
 ON CONFLICT (metric_name) DO NOTHING;

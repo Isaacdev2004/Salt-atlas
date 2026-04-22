@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:load": "node scripts/loadToPostgres.js",
-    "geojson:merge": "node scripts/mergeGeojson.js"
+    "geojson:merge": "node scripts/mergeGeojson.js",
+    "seed:transit": "node scripts/seedTransitFromRegions.js"
   },
   "keywords": [],
   "author": "",

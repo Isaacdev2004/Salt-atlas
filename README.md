@@ -5,7 +5,8 @@ Salt Atlas is an exploration tool that surfaces high-opportunity U.S. counties b
 ## Features
 
 - County-level choropleth powered by opportunity, population, income, and business metrics with log-normalized scoring.
-- Infrastructure toggles (airports, ports, rail, warehouses, manufacturing) rendered as clustered POI layers on Mapbox GL.
+- Infrastructure toggles (airports, ports, rail, warehouses, manufacturing, **transit agencies**) rendered as clustered POI layers on Mapbox GL.
+- **Transit density** is part of the opportunity score (10% weight by default): `transit_agencies` per county, normalized as agencies per 100k residents. Replace placeholder data with [NTD](https://www.transit.dot.gov/ntd/fta-census-map) rollups using `backend/scripts/seedTransitFromRegions.js` (see `backend/data/raw/README_NTD.md`).
 - Select mode, top 20 quick pick, export-to-CSV, and detailed region panel with comparisons.
 - Responsive layout with desktop sidebar/panel flows and mobile action sheets, help walkthrough, and clean map view toggle.
 - Backend caching plus optional PostgreSQL weights table so scoring can vary without redeploying the frontend.

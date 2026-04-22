@@ -16,6 +16,7 @@ const layerLabel = {
   score_population: "Population",
   score_income: "Median Income",
   score_business: "Business Count",
+  score_transit: "Transit Density",
 };
 
 const POI_CONFIG = {
@@ -47,6 +48,12 @@ const POI_CONFIG = {
     label: "Manufacturing",
     color: "#eab308",
     endpoint: "/api/manufacturing",
+    cluster: true,
+  },
+  transit: {
+    label: "Transit Agencies",
+    color: "#1d4ed8",
+    endpoint: "/api/transit",
     cluster: true,
   },
 };
@@ -202,6 +209,7 @@ const HELP_STEPS = [
           <li>Population</li>
           <li>Median Income</li>
           <li>Business Count</li>
+          <li>Transit agencies (optional filter)</li>
         </ul>
         <p>Adjust both minimum and maximum values.</p>
       </>
@@ -690,6 +698,7 @@ function HoverCard({ feature, position, visible }) {
             ["Population", fmtNum(p.raw_population)],
             ["Median Income", fmtCurrency(p.raw_median_income)],
             ["Business Count", fmtNumFull(p.raw_business_count)],
+            ["Transit agencies", fmtNumFull(p.raw_transit_agencies)],
           ].map(([label, val]) => (
             <div
               key={label}
@@ -743,6 +752,8 @@ function FilterPanelContent({
   handleSliderChange,
   handleResetFilters,
   onClose,
+  filterTransitAgenciesOnly,
+  onTransitAgenciesToggle,
 }) {
   return (
     <>
@@ -818,6 +829,27 @@ function FilterPanelContent({
               );
             })}
           </div>
+
+          <div className="h-px bg-[rgba(13,31,53,0.08)] my-4" />
+
+          <SectionHeader>Mobility</SectionHeader>
+          <label className="flex items-start gap-3 cursor-pointer group mb-2">
+            <input
+              type="checkbox"
+              checked={filterTransitAgenciesOnly}
+              onChange={(e) => onTransitAgenciesToggle(e.target.checked)}
+              className="mt-1 w-4 h-4 rounded border-[rgba(13,31,53,0.35)] text-[#0d1f35] cursor-pointer"
+            />
+            <div>
+              <div className="text-sm lg:text-[0.95rem] font-semibold text-[#0d1f35] group-hover:text-[#0d1f35]">
+                Transit Agencies
+              </div>
+              <div className="text-xs lg:text-[0.8rem] font-medium text-gray-500 mt-0.5 leading-snug">
+                Show only counties with at least one reported transit agency
+                (counts from NTD-style rollups).
+              </div>
+            </div>
+          </label>
         </>
       )}
 
@@ -962,7 +994,7 @@ function RegionDetailPanel({ p, onClose }) {
               {getScoreLabel(p.score_opportunity ?? 0)}
             </span>
             <span className="text-xs lg:text-[0.8rem] font-medium text-gray-500 mt-0.5">
-              Population · Income · Business
+              Population · Income · Business · Transit
             </span>
           </div>
         </div>
@@ -995,6 +1027,14 @@ function RegionDetailPanel({ p, onClose }) {
             sub: "Registered entities",
             val: fmtNumFull(p.raw_business_count),
             bar: p.score_business ?? 0,
+            gold: false,
+          },
+          {
+            icon: "🚌",
+            name: "Transit Density",
+            sub: "Agencies per capita (normalized)",
+            val: fmtNumFull(p.raw_transit_agencies),
+            bar: p.score_transit ?? 0,
             gold: false,
           },
           {
@@ -1133,6 +1173,8 @@ export default function App() {
     median_income: [0, 1],
     business_count: [0, 1],
   });
+  const [filterTransitAgenciesOnly, setFilterTransitAgenciesOnly] =
+    useState(false);
 
   // Keep refs in sync
   setHoverFeatureRef.current = setHoverFeature;
@@ -1163,14 +1205,11 @@ export default function App() {
   }, [isDesktop]);
 
   const hasSelection = selectedFeatures.length > 0;
-  const activeFiltersCount = [
-    "population",
-    "median_income",
-    "business_count",
-  ].filter(
-    (k) =>
-      filters[k][1] < dataBounds[k].max || filters[k][0] > dataBounds[k].min
-  ).length;
+  const activeFiltersCount =
+    ["population", "median_income", "business_count"].filter(
+      (k) =>
+        filters[k][1] < dataBounds[k].max || filters[k][0] > dataBounds[k].min
+    ).length + (filterTransitAgenciesOnly ? 1 : 0);
 
   /*  Toast  */
 
@@ -1278,10 +1317,12 @@ export default function App() {
             raw_population: isFinite(pop) ? pop : 0,
             raw_median_income: isFinite(inc) ? inc : 0,
             raw_business_count: isFinite(bus) ? bus : 0,
+            raw_transit_agencies: Number(r.transit_agencies) || 0,
             score_opportunity: Number(s.opportunity_score) || 0,
             score_population: Number(s.population_norm) || 0,
             score_income: Number(s.median_income_norm) || 0,
             score_business: Number(s.business_count_norm) || 0,
+            score_transit: Number(s.transit_density_norm) || 0,
           };
           if (isFinite(pop) && pop >= 0) {
             boundsAcc.population.min = Math.min(boundsAcc.population.min, pop);
@@ -1330,6 +1371,7 @@ export default function App() {
           score_population: sortedBy("score_population"),
           score_income: sortedBy("score_income"),
           score_business: sortedBy("score_business"),
+          score_transit: sortedBy("score_transit"),
         };
 
         setDataBounds(boundsAcc);
@@ -1404,10 +1446,12 @@ export default function App() {
               raw_population: d.raw_population,
               raw_median_income: d.raw_median_income,
               raw_business_count: d.raw_business_count,
+              raw_transit_agencies: d.raw_transit_agencies,
               fs_score_opportunity: d.score_opportunity,
               fs_score_population: d.score_population,
               fs_score_income: d.score_income,
               fs_score_business: d.score_business,
+              fs_score_transit: d.score_transit,
             }
           );
         });
@@ -1442,10 +1486,12 @@ export default function App() {
             raw_population: d.raw_population ?? 0,
             raw_median_income: d.raw_median_income ?? 0,
             raw_business_count: d.raw_business_count ?? 0,
+            raw_transit_agencies: d.raw_transit_agencies ?? 0,
             score_opportunity: d.score_opportunity ?? 0,
             score_population: d.score_population ?? 0,
             score_income: d.score_income ?? 0,
             score_business: d.score_business ?? 0,
+            score_transit: d.score_transit ?? 0,
           };
           setHoverFeatureRef.current?.({
             ...feat,
@@ -1498,10 +1544,12 @@ export default function App() {
             raw_population: d.raw_population ?? 0,
             raw_median_income: d.raw_median_income ?? 0,
             raw_business_count: d.raw_business_count ?? 0,
+            raw_transit_agencies: d.raw_transit_agencies ?? 0,
             score_opportunity: d.score_opportunity ?? 0,
             score_population: d.score_population ?? 0,
             score_income: d.score_income ?? 0,
             score_business: d.score_business ?? 0,
+            score_transit: d.score_transit ?? 0,
           };
           const enrichedFeature = { ...feat, id, properties: enrichedProps };
 
@@ -1593,6 +1641,13 @@ export default function App() {
       ];
     });
 
+    const allFilterParts = filterTransitAgenciesOnly
+      ? [
+          ...conditions,
+          [">=", ["coalesce", ["feature-state", "raw_transit_agencies"], 0], 1],
+        ]
+      : conditions;
+
     map.setPaintProperty(
       "counties-fill",
       "fill-opacity",
@@ -1609,12 +1664,12 @@ export default function App() {
             "case",
             ["!", ["boolean", ["feature-state", "hasData"], false]],
             0.07,
-            ["all", ...conditions],
+            ["all", ...allFilterParts],
             0.85,
             0.07,
           ]
     );
-  }, [filters, activeLayer]);
+  }, [filters, activeLayer, filterTransitAgenciesOnly]);
 
   /*  Reactive: POI layer visibility  */
   useEffect(() => {
@@ -1753,7 +1808,18 @@ export default function App() {
         dataBounds.business_count.max,
       ],
     });
+    setFilterTransitAgenciesOnly(false);
   }, [dataBounds]);
+
+  const handleTransitAgenciesToggle = useCallback((checked) => {
+    setFilterTransitAgenciesOnly(checked);
+    setIsUpdatingMap(true);
+    clearTimeout(updateMapTimeoutRef.current);
+    updateMapTimeoutRef.current = setTimeout(
+      () => setIsUpdatingMap(false),
+      750
+    );
+  }, []);
 
   /*  Layer handler  */
 
@@ -1793,6 +1859,7 @@ export default function App() {
           return;
         }
         const vis = visMap[key] ? "visible" : "none";
+        const isTransit = key === "transit";
 
         if (!map.getSource(key)) {
           map.addSource(key, {
@@ -1822,6 +1889,21 @@ export default function App() {
                 100,
                 22,
               ],
+              ...(isTransit
+                ? {
+                    "circle-opacity": [
+                      "interpolate",
+                      ["linear"],
+                      ["get", "point_count"],
+                      1,
+                      0.3,
+                      30,
+                      0.72,
+                      120,
+                      1,
+                    ],
+                  }
+                : { "circle-opacity": 0.92 }),
             },
           });
         }
@@ -1847,21 +1929,43 @@ export default function App() {
             source: key,
             filter: config.cluster ? ["!", ["has", "point_count"]] : ["all"],
             layout: { visibility: vis },
-            paint: {
-              "circle-radius": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                3,
-                4,
-                8,
-                8,
-                12,
-                12,
-              ],
-              "circle-color": config.color,
-              "circle-opacity": 0.9,
-            },
+            paint: isTransit
+              ? {
+                  "circle-radius": [
+                    "interpolate",
+                    ["linear"],
+                    ["coalesce", ["get", "weight"], 0.35],
+                    0.25,
+                    4,
+                    1,
+                    12,
+                  ],
+                  "circle-color": "#1d4ed8",
+                  "circle-opacity": [
+                    "interpolate",
+                    ["linear"],
+                    ["coalesce", ["get", "weight"], 0.35],
+                    0.2,
+                    0.35,
+                    1,
+                    0.95,
+                  ],
+                }
+              : {
+                  "circle-radius": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    3,
+                    4,
+                    8,
+                    8,
+                    12,
+                    12,
+                  ],
+                  "circle-color": config.color,
+                  "circle-opacity": 0.9,
+                },
           });
 
           map.on("mouseenter", `${key}-points`, () => {
@@ -1979,6 +2083,7 @@ export default function App() {
       "score_population",
       "score_income",
       "score_business",
+      "score_transit",
     ].includes(activeLayer)
       ? activeLayer
       : "score_opportunity";
@@ -1988,13 +2093,15 @@ export default function App() {
 
     // Filter by current slider bounds, then sort by score, take top 20
     const top = Object.entries(dataMap)
-      .filter(([, d]) =>
-        Object.entries(FILTER_META).every(([key, meta]) => {
+      .filter(([, d]) => {
+        if (filterTransitAgenciesOnly && (d.raw_transit_agencies ?? 0) < 1)
+          return false;
+        return Object.entries(FILTER_META).every(([key, meta]) => {
           const val = d[meta.prop] ?? 0;
           const [lo, hi] = currentFilters[key] ?? [0, Infinity];
           return val >= lo && val <= hi;
-        })
-      )
+        });
+      })
       .sort(([, a], [, b]) => (b[scoreKey] ?? 0) - (a[scoreKey] ?? 0))
       .slice(0, 20)
       .map(([fips, d]) => ({
@@ -2069,10 +2176,12 @@ export default function App() {
           population: f.properties.raw_population,
           median_income: f.properties.raw_median_income,
           business_count: f.properties.raw_business_count,
+          transit_agencies: f.properties.raw_transit_agencies,
           population_norm: f.properties.score_population,
           income_norm: f.properties.score_income,
           business_norm: f.properties.score_business,
           opportunity_score: f.properties.score_opportunity,
+          "Transit Score": f.properties.score_transit,
         }));
         const blob = new Blob([Papa.unparse(rows)], {
           type: "text/csv;charset=utf-8;",
@@ -2281,6 +2390,8 @@ export default function App() {
                     showToast("Filters reset", 1400);
                   }}
                   onClose={() => setFiltersOpen(false)}
+                  filterTransitAgenciesOnly={filterTransitAgenciesOnly}
+                  onTransitAgenciesToggle={handleTransitAgenciesToggle}
                 />
               </div>
             </div>
@@ -2485,6 +2596,8 @@ export default function App() {
             showToast("Filters reset", 1400);
           }}
           onClose={() => setFiltersOpen(false)}
+          filterTransitAgenciesOnly={filterTransitAgenciesOnly}
+          onTransitAgenciesToggle={handleTransitAgenciesToggle}
         />
       </MobileFilterSheet>
 

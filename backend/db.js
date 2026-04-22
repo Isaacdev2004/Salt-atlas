@@ -30,9 +30,10 @@ const pool = isProd
 // Must match metric_name values seeded in init.sql.
 // ---------------------------------------------------------------------------
 const FALLBACK_WEIGHTS = {
-  population:     0.33,
-  median_income:  0.33,
-  business_count: 0.33,
+  population:       0.3,
+  median_income:    0.3,
+  business_count:   0.3,
+  transit_density:  0.1,
 };
 
 // ---------------------------------------------------------------------------

@@ -25,6 +25,7 @@ const POI_CONFIG = {
   rail: true,
   warehouses: true,
   manufacturing: true,
+  transit: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -35,9 +36,10 @@ const POI_CONFIG = {
 // add a row to scoring_weights, and add its key here for file-mode fallback.
 // ---------------------------------------------------------------------------
 const FILE_MODE_WEIGHTS = {
-  population: 0.33,
-  median_income: 0.33,
-  business_count: 0.33,
+  population: 0.3,
+  median_income: 0.3,
+  business_count: 0.3,
+  transit_density: 0.1,
 };
 
 // ---------------------------------------------------------------------------
@@ -73,6 +75,12 @@ const METRIC_MAP = {
     dbCol: "business_count",
     logKey: "_business_count",
     transform: "log",
+  },
+  /* Agencies per 100k residents — uses transit_agencies + population from row */
+  transit_density: {
+    dbCol: "transit_agencies",
+    logKey: "_transit_density",
+    transform: "transit_per_100k",
   },
 };
 
@@ -114,12 +122,27 @@ const scoreRegions = (rows, weights) => {
 
   // Step 1 - log-compress every metric defined in weights
   const compressed = rows.map((r) => {
-    const entry = { fips: r.fips, _raw: {} };
+    const entry = {
+      fips: r.fips,
+      _raw: {},
+      transit_agencies: Number(r.transit_agencies) || 0,
+    };
     metrics.forEach((key) => {
       const { dbCol, logKey } = METRIC_MAP[key] || {
         dbCol: key,
         logKey: `_${key}`,
       };
+      const transform = METRIC_MAP[key]?.transform || "log";
+
+      if (transform === "transit_per_100k") {
+        const pop = Number(r.population) || 0;
+        const ag = Number(r[dbCol]) || 0;
+        const density = pop > 0 ? (ag / pop) * 100000 : 0;
+        entry._raw[key] = density;
+        entry[logKey] = Math.log(density + 1);
+        return;
+      }
+
       let rawVal = Number(r[dbCol] ?? r[key]);
 
       if (!isFinite(rawVal) || rawVal < 0) {
@@ -127,7 +150,6 @@ const scoreRegions = (rows, weights) => {
         rawVal = 0;
       }
       entry._raw[key] = rawVal;
-      const transform = METRIC_MAP[key]?.transform || "log";
 
       entry[logKey] = transform === "log" ? Math.log(rawVal + 1) : rawVal;
     });
@@ -147,7 +169,6 @@ const scoreRegions = (rows, weights) => {
 
   // Step 3 - normalize + composite score
   return compressed.map((r) => {
-    const { logKey } = METRIC_MAP;
     const scores = {};
 
     // Compute normalized score for each metric
@@ -165,7 +186,10 @@ const scoreRegions = (rows, weights) => {
 
     return {
       id: r.fips,
-      raw_data: { ...r._raw },
+      raw_data: {
+        ...r._raw,
+        transit_agencies: r.transit_agencies ?? 0,
+      },
       scores,
     };
   });
@@ -185,6 +209,7 @@ const loadRegionsFromFile = () => {
     population: Number(row.population) || 0,
     median_income: Number(row.median_income) || 0,
     business_count: Number(row.business_count) || 0,
+    transit_agencies: Number(row.transit_agencies) || 0,
   }));
 };
 
