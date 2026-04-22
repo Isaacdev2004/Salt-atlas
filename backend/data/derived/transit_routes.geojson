@@ -1,0 +1,109 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor A" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.02, 40.72],
+          [-73.95, 40.78],
+          [-73.88, 40.85],
+          [-73.78, 40.9]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor B" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-71.08, 42.35],
+          [-71.02, 42.4],
+          [-70.95, 42.45],
+          [-70.88, 42.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor C" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-87.65, 41.88],
+          [-87.55, 41.9],
+          [-87.45, 41.92],
+          [-87.35, 41.95]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor D" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.42, 37.78],
+          [-122.38, 37.76],
+          [-122.32, 37.74],
+          [-122.25, 37.72]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor E" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-80.2, 25.78],
+          [-80.15, 25.82],
+          [-80.08, 25.86],
+          [-80.02, 25.9]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor F" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-96.8, 32.78],
+          [-96.75, 32.82],
+          [-96.68, 32.88],
+          [-96.6, 32.92]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor G" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-104.99, 39.74],
+          [-104.92, 39.76],
+          [-104.85, 39.78],
+          [-104.78, 39.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample corridor H" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-75.17, 39.95],
+          [-75.12, 39.98],
+          [-75.05, 40.02],
+          [-74.98, 40.06]
+        ]
+      }
+    }
+  ]
+}

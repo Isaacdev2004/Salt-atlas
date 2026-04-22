@@ -51,7 +51,7 @@ const POI_CONFIG = {
     cluster: true,
   },
   transit: {
-    label: "Transit Agencies",
+    label: "Transit (agencies & routes)",
     color: "#1d4ed8",
     endpoint: "/api/transit",
     cluster: true,
@@ -128,6 +128,24 @@ const CHORO_STOPS = [
   "rgba(15,23,83,1.00)",
 ];
 
+/** Opaque blues so transit density reads on the light Mapbox basemap */
+const TRANSIT_CHORO_STOPS = [
+  0,
+  "#dbeafe",
+  0.15,
+  "#93c5fd",
+  0.35,
+  "#60a5fa",
+  0.55,
+  "#3b82f6",
+  0.75,
+  "#1d4ed8",
+  0.92,
+  "#1e3a8a",
+  1,
+  "#172554",
+];
+
 /*
  * buildFillColor - Mapbox expression for the fill layer.
  *
@@ -139,6 +157,7 @@ const CHORO_STOPS = [
  */
 const buildFillColor = (scoreKey) => {
   const fsScore = `fs_${scoreKey}`;
+  const stops = scoreKey === "score_transit" ? TRANSIT_CHORO_STOPS : CHORO_STOPS;
 
   return [
     "case",
@@ -152,7 +171,7 @@ const buildFillColor = (scoreKey) => {
       "interpolate",
       ["linear"],
       ["coalesce", ["feature-state", fsScore], 0],
-      ...CHORO_STOPS,
+      ...stops,
     ],
   ];
 };
@@ -1521,9 +1540,13 @@ export default function App() {
           if (!e.features?.length) return;
 
           // If a POI point is on top, let that handler fire instead
-          const poiLayerIds = Object.keys(POI_CONFIG)
-            .flatMap((k) => [`${k}-points`, `${k}-clusters`])
-            .filter((lid) => map.getLayer(lid));
+          const poiLayerIds = [
+            ...Object.keys(POI_CONFIG).flatMap((k) => [
+              `${k}-points`,
+              `${k}-clusters`,
+            ]),
+            ...(map.getLayer("transit_routes-line") ? ["transit_routes-line"] : []),
+          ].filter((lid) => map.getLayer(lid));
           if (
             poiLayerIds.length &&
             map.queryRenderedFeatures(e.point, { layers: poiLayerIds }).length >
@@ -1675,6 +1698,15 @@ export default function App() {
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+
+    if (map.getLayer("transit_routes-line")) {
+      map.setLayoutProperty(
+        "transit_routes-line",
+        "visibility",
+        poiLayers.transit ? "visible" : "none"
+      );
+    }
+
     Object.entries(poiLayers).forEach(([key, visible]) => {
       ["clusters", "cluster-count", "points"].forEach((type) => {
         const lid = `${key}-${type}`;
@@ -1936,20 +1968,22 @@ export default function App() {
                     ["linear"],
                     ["coalesce", ["get", "weight"], 0.35],
                     0.25,
-                    4,
+                    6,
                     1,
-                    12,
+                    14,
                   ],
-                  "circle-color": "#1d4ed8",
+                  "circle-color": "#172554",
                   "circle-opacity": [
                     "interpolate",
                     ["linear"],
                     ["coalesce", ["get", "weight"], 0.35],
-                    0.2,
-                    0.35,
+                    0.55,
+                    0.45,
                     1,
-                    0.95,
+                    1,
                   ],
+                  "circle-stroke-width": 1.5,
+                  "circle-stroke-color": "#ffffff",
                 }
               : {
                   "circle-radius": [
@@ -2014,7 +2048,66 @@ export default function App() {
               .addTo(map);
           });
         }
+
+        ["clusters", "cluster-count", "points"].forEach((suffix) => {
+          const lid = `${key}-${suffix}`;
+          if (map.getLayer(lid)) {
+            try {
+              map.moveLayer(lid);
+            } catch {
+              /* ignore if style API differs */
+            }
+          }
+        });
       });
+
+      /* Sample route polylines — same visibility as Transit POI */
+      try {
+        const routesRes = await fetch(`${API_BASE}/api/transit_routes`);
+        if (routesRes.ok) {
+          const routeData = await routesRes.json();
+          if (!map.getSource("transit_routes")) {
+            map.addSource("transit_routes", {
+              type: "geojson",
+              data: routeData,
+            });
+          }
+          if (!map.getLayer("transit_routes-line")) {
+            map.addLayer({
+              id: "transit_routes-line",
+              type: "line",
+              source: "transit_routes",
+              layout: {
+                visibility: poiLayersRef.current.transit ? "visible" : "none",
+                "line-cap": "round",
+                "line-join": "round",
+              },
+              paint: {
+                "line-color": "#1e3a8a",
+                "line-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  4,
+                  2,
+                  8,
+                  4,
+                  12,
+                  7,
+                ],
+                "line-opacity": 0.92,
+              },
+            });
+            try {
+              map.moveLayer("transit_routes-line");
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+      } catch {
+        /* optional layer */
+      }
 
       if (failedPoi.length) {
         const labels = failedPoi
@@ -2023,7 +2116,8 @@ export default function App() {
         showToast(`Could not load: ${labels}`, 5000);
       }
 
-      poiLoadedRef.current = true;
+      /* Allow retry if any POI failed (e.g. API missing /api/transit on first deploy) */
+      poiLoadedRef.current = failedPoi.length === 0;
       poiLoadingPromiseRef.current = null;
     })();
 

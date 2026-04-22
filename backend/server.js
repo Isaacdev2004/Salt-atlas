@@ -26,6 +26,7 @@ const POI_CONFIG = {
   warehouses: true,
   manufacturing: true,
   transit: true,
+  transit_routes: true,
 };
 
 // ---------------------------------------------------------------------------
