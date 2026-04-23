@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.local
 .env.development.local
+
+# Esri / ArcGIS disk cache (backend)
+backend/data/cache/

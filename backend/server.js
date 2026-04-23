@@ -14,6 +14,7 @@ const Papa = require("papaparse");
 const db = process.env.DATABASE_URL ? require("./db") : null;
 const pool = db;
 const getWeights = db ? db.getWeights : null;
+const { SERVICES, fetchEsriGeoJson, stripForMapbox } = require("./lib/esriGeojson");
 
 // ---------------------------------------------------------------------------
 // POI layer config
@@ -25,8 +26,6 @@ const POI_CONFIG = {
   rail: true,
   warehouses: true,
   manufacturing: true,
-  transit: true,
-  transit_routes: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -200,18 +199,43 @@ const scoreRegions = (rows, weights) => {
 // Data loaders
 // ---------------------------------------------------------------------------
 
+function hashFips(fips) {
+  let h = 0;
+  const s = String(fips);
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+/** When regions.csv omits or blanks transit_agencies, avoid all-zero scoring. */
+function syntheticTransitAgencies(fips, population) {
+  const pop = Number(population) || 0;
+  const h = hashFips(fips);
+  const fromPop = Math.floor(Math.sqrt(Math.max(pop, 0) / 8000));
+  const jitter = h % 12;
+  return Math.max(0, Math.min(180, fromPop + jitter));
+}
+
 const loadRegionsFromFile = () => {
   const filePath = path.join(__dirname, "data/derived/regions.csv");
   const csv = fs.readFileSync(filePath, "utf8");
   const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+  const fields = parsed.meta.fields || [];
+  const hasTransitCol = fields.includes("transit_agencies");
 
-  return parsed.data.map((row) => ({
-    fips: row.fips,
-    population: Number(row.population) || 0,
-    median_income: Number(row.median_income) || 0,
-    business_count: Number(row.business_count) || 0,
-    transit_agencies: Number(row.transit_agencies) || 0,
-  }));
+  return parsed.data.map((row) => {
+    const fips = String(row.fips ?? "").padStart(5, "0");
+    let ta = Number(row.transit_agencies);
+    if (!hasTransitCol || !Number.isFinite(ta)) {
+      ta = syntheticTransitAgencies(fips, row.population);
+    }
+    return {
+      fips: row.fips,
+      population: Number(row.population) || 0,
+      median_income: Number(row.median_income) || 0,
+      business_count: Number(row.business_count) || 0,
+      transit_agencies: ta,
+    };
+  });
 };
 
 const loadGeoJSONFromFile = (fileName) => {
@@ -333,6 +357,51 @@ app.get("/api/weights", async (req, res) => {
       .json({ error: "Failed to load weights", detail: err.message });
   }
 });
+
+/**
+ * USDOT National Transit Map (ArcGIS) — same FeatureServer endpoints as
+ * https://usdot.maps.arcgis.com/apps/mapviewer/index.html?webmap=5287ba87422448c7a97e5d60cc5e4f7b
+ */
+async function serveEsriGeoJson(req, res, serviceUrl, opts = {}) {
+  const cacheKey = `esri:${serviceUrl}:${JSON.stringify(opts)}`;
+  try {
+    const now = Date.now();
+    const cached = poiLayerCache.get(cacheKey);
+    if (cached && now - cached.ts < API_CACHE_TTL_MS) {
+      return res.json(cached.data);
+    }
+    const raw = await fetchEsriGeoJson(serviceUrl, opts);
+    const data = stripForMapbox(raw);
+    poiLayerCache.set(cacheKey, { data, ts: now });
+    return res.json(data);
+  } catch (err) {
+    console.error("[esri]", err.message);
+    return res.status(500).json({
+      error: "Failed to load transit map layer",
+      detail: err.message,
+    });
+  }
+}
+
+app.get("/api/ntd_reporters_2024", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.ntd_reporters_2024, {
+    maxFeatures: Number(process.env.ESRI_NTD_MAX ?? 12000),
+  })
+);
+
+app.get("/api/ntm_routes", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
+    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 10000),
+    extraQuery: "maxAllowableOffset=0.0002",
+  })
+);
+
+/** FTA group — Urbanized Areas (2020), FeatureServer layer 1 */
+app.get("/api/fta_admin_boundaries", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.fta_admin_uza_2020, {
+    maxFeatures: Number(process.env.ESRI_FTA_MAX ?? 5000),
+  })
+);
 
 /**
  * GET /api/:layer

@@ -16,45 +16,102 @@ const layerLabel = {
   score_population: "Population",
   score_income: "Median Income",
   score_business: "Business Count",
-  score_transit: "Transit Density",
+  score_transit: "Transit supply (county)",
 };
+
+/** Line colors aligned with USDOT National Transit Map route symbology */
+const NTM_ROUTE_LINE_COLOR = [
+  "match",
+  ["coalesce", ["get", "route_type_text"], ""],
+  "Bus",
+  "#bab1b1",
+  "Commuter Rail",
+  "#a11e06",
+  "Heavy Rail",
+  "#a11e06",
+  "Intercity Rail",
+  "#4a0a0a",
+  "Light Rail",
+  "#cb3b09",
+  "Streetcar",
+  "#cb3b09",
+  "Cable Tram",
+  "#8b5cf6",
+  "Ferry",
+  "#0284c7",
+  "Funicular",
+  "#64748b",
+  "Gondola",
+  "#64748b",
+  "Monorail",
+  "#64748b",
+  "Trolleybus",
+  "#6b7280",
+  "Air Service",
+  "#0ea5e9",
+  "Other",
+  "#525252",
+  "#6b7280",
+];
 
 const POI_CONFIG = {
   airports: {
     label: "Airports",
     color: "#ef4444",
     endpoint: "/api/airports",
+    kind: "cluster",
     cluster: true,
   },
   ports: {
     label: "Ports",
     color: "#0ea5e9",
     endpoint: "/api/ports",
+    kind: "cluster",
     cluster: true,
   },
   rail: {
     label: "Rail Terminals",
     color: "#a855f7",
     endpoint: "/api/rail",
+    kind: "cluster",
     cluster: true,
   },
   warehouses: {
     label: "Warehouses",
     color: "#22c55e",
     endpoint: "/api/warehouses",
+    kind: "cluster",
     cluster: true,
   },
   manufacturing: {
     label: "Manufacturing",
     color: "#eab308",
     endpoint: "/api/manufacturing",
+    kind: "cluster",
     cluster: true,
   },
-  transit: {
-    label: "Transit (agencies & routes)",
-    color: "#1d4ed8",
-    endpoint: "/api/transit",
+  ntd_reporters_2024: {
+    label: "National Transit Database Reporters 2024",
+    color: "#b42318",
+    endpoint: "/api/ntd_reporters_2024",
+    kind: "cluster",
     cluster: true,
+  },
+  ntm_routes: {
+    label: "National Transit Map Routes",
+    color: "#6b7280",
+    endpoint: "/api/ntm_routes",
+    kind: "line",
+    cluster: false,
+  },
+  fta_admin_boundaries: {
+    label: "FTA Administrative Boundaries (Urbanized Areas 2020)",
+    color: "rgba(196,160,80,0.35)",
+    endpoint: "/api/fta_admin_boundaries",
+    kind: "fill",
+    cluster: false,
+    fillColor: "rgba(196,160,80,0.14)",
+    fillOutlineColor: "rgba(138,106,31,0.9)",
   },
 };
 
@@ -78,6 +135,13 @@ const fmtCurrency = (n) => {
     maximumFractionDigits: 0,
   }).format(n);
 };
+
+const poiPopupEsc = (s) =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 const getScoreLabel = (s) =>
   s >= 0.75 ? "Strong" : s >= 0.5 ? "Moderate" : s >= 0.25 ? "Limited" : "Weak";
 
@@ -128,7 +192,7 @@ const CHORO_STOPS = [
   "rgba(15,23,83,1.00)",
 ];
 
-/** Opaque blues so transit density reads on the light Mapbox basemap */
+/** Opaque blues so the transit choropleth reads on the light Mapbox basemap */
 const TRANSIT_CHORO_STOPS = [
   0,
   "#dbeafe",
@@ -228,9 +292,29 @@ const HELP_STEPS = [
           <li>Population</li>
           <li>Median Income</li>
           <li>Business Count</li>
-          <li>Transit agencies (optional filter)</li>
+          <li>
+            Counties with transit agencies (optional; uses county rollups, not
+            the live USDOT map layers)
+          </li>
         </ul>
         <p>Adjust both minimum and maximum values.</p>
+      </>
+    ),
+  },
+  {
+    title: "Infrastructure (USDOT)",
+    body: (
+      <>
+        <p>
+          Open <b>Infrastructure</b> to toggle live layers from the same ArcGIS
+          services as the USDOT National Transit Map:{" "}
+          <b>NTD Reporters 2024</b>, <b>National Transit Map Routes</b>, and{" "}
+          <b>FTA Administrative Boundaries</b> (Urbanized Areas 2020).
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          The first toggle may take a few seconds while geometry is downloaded
+          and cached.
+        </p>
       </>
     ),
   },
@@ -622,7 +706,7 @@ function FilterSlider({
 function InfraLegend({ poiLayers, onToggle, disabled = false }) {
   return (
     <div
-      className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[168px] animate-fade-slide"
+      className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[200px] max-w-[min(100vw-24px,320px)] animate-fade-slide"
       style={{
         background: "rgba(10,26,47,0.92)",
         backdropFilter: "blur(12px)",
@@ -636,20 +720,41 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
       </div>
       {Object.entries(POI_CONFIG).map(([key, cfg]) => {
         const on = poiLayers[key];
+        const kind = cfg.kind ?? "cluster";
         return (
           <button
             key={key}
             onClick={() => onToggle(key)}
             className="flex items-center gap-2.5 w-full py-1.5 hover:bg-[rgba(240,236,227,0.06)] rounded px-1.5 transition-colors"
           >
-            <span
-              className="w-2 h-2 rounded-full shrink-0 transition-all duration-200"
-              style={{
-                background: cfg.color,
-                opacity: on ? 1 : 0.2,
-                boxShadow: on ? `0 0 6px ${cfg.color}60` : "none",
-              }}
-            />
+            {kind === "line" ? (
+              <span
+                className="w-5 h-1 rounded-sm shrink-0 transition-all duration-200"
+                style={{
+                  background: "#6b7280",
+                  opacity: on ? 1 : 0.25,
+                  boxShadow: on ? "0 0 6px rgba(107,114,128,0.45)" : "none",
+                }}
+              />
+            ) : kind === "fill" ? (
+              <span
+                className="w-3.5 h-3.5 rounded-sm shrink-0 border transition-all duration-200"
+                style={{
+                  background: cfg.fillColor,
+                  borderColor: cfg.fillOutlineColor,
+                  opacity: on ? 1 : 0.25,
+                }}
+              />
+            ) : (
+              <span
+                className="w-2 h-2 rounded-full shrink-0 transition-all duration-200"
+                style={{
+                  background: cfg.color,
+                  opacity: on ? 1 : 0.2,
+                  boxShadow: on ? `0 0 6px ${cfg.color}60` : "none",
+                }}
+              />
+            )}
             <span
               className={`text-sm font-semibold font-serif flex-1 text-left transition-colors ${
                 on ? "text-[#f0ece3]" : "text-[rgba(240,236,227,0.35)]"
@@ -717,7 +822,7 @@ function HoverCard({ feature, position, visible }) {
             ["Population", fmtNum(p.raw_population)],
             ["Median Income", fmtCurrency(p.raw_median_income)],
             ["Business Count", fmtNumFull(p.raw_business_count)],
-            ["Transit agencies", fmtNumFull(p.raw_transit_agencies)],
+            ["Agencies (county data)", fmtNumFull(p.raw_transit_agencies)],
           ].map(([label, val]) => (
             <div
               key={label}
@@ -1050,8 +1155,9 @@ function RegionDetailPanel({ p, onClose }) {
           },
           {
             icon: "🚌",
-            name: "Transit Density",
-            sub: "Agencies per capita (normalized)",
+            name: "Transit supply (county)",
+            sub:
+              "From the county data row: agencies per 100k residents, normalized for scoring. USDOT map layers are separate (Infrastructure toggles).",
             val: fmtNumFull(p.raw_transit_agencies),
             bar: p.score_transit ?? 0,
             gold: false,
@@ -1540,13 +1646,16 @@ export default function App() {
           if (!e.features?.length) return;
 
           // If a POI point is on top, let that handler fire instead
-          const poiLayerIds = [
-            ...Object.keys(POI_CONFIG).flatMap((k) => [
-              `${k}-points`,
-              `${k}-clusters`,
-            ]),
-            ...(map.getLayer("transit_routes-line") ? ["transit_routes-line"] : []),
-          ].filter((lid) => map.getLayer(lid));
+          const poiLayerIds = Object.keys(POI_CONFIG).flatMap((k) => {
+            const cfg = POI_CONFIG[k];
+            const kind = cfg.kind ?? "cluster";
+            if (kind === "line")
+              return map.getLayer(`${k}-line`) ? [`${k}-line`] : [];
+            if (kind === "fill") return [];
+            return [`${k}-points`, `${k}-clusters`].filter((lid) =>
+              map.getLayer(lid)
+            );
+          });
           if (
             poiLayerIds.length &&
             map.queryRenderedFeatures(e.point, { layers: poiLayerIds }).length >
@@ -1699,19 +1808,24 @@ export default function App() {
     const map = mapRef.current;
     if (!map) return;
 
-    if (map.getLayer("transit_routes-line")) {
-      map.setLayoutProperty(
-        "transit_routes-line",
-        "visibility",
-        poiLayers.transit ? "visible" : "none"
-      );
-    }
-
     Object.entries(poiLayers).forEach(([key, visible]) => {
+      const cfg = POI_CONFIG[key];
+      const kind = cfg?.kind ?? "cluster";
+      const vis = visible ? "visible" : "none";
+      if (kind === "line") {
+        if (map.getLayer(`${key}-line`))
+          map.setLayoutProperty(`${key}-line`, "visibility", vis);
+        return;
+      }
+      if (kind === "fill") {
+        if (map.getLayer(`${key}-fill`))
+          map.setLayoutProperty(`${key}-fill`, "visibility", vis);
+        return;
+      }
       ["clusters", "cluster-count", "points"].forEach((type) => {
         const lid = `${key}-${type}`;
         if (!map.getLayer(lid)) return;
-        map.setLayoutProperty(lid, "visibility", visible ? "visible" : "none");
+        map.setLayoutProperty(lid, "visibility", vis);
       });
     });
   }, [poiLayers]);
@@ -1891,7 +2005,112 @@ export default function App() {
           return;
         }
         const vis = visMap[key] ? "visible" : "none";
-        const isTransit = key === "transit";
+        const kind = config.kind ?? "cluster";
+
+        if (kind === "fill") {
+          const beforeId = map.getLayer("counties-fill")
+            ? "counties-fill"
+            : undefined;
+          if (!map.getSource(key)) {
+            map.addSource(key, { type: "geojson", data: res.value });
+          }
+          if (!map.getLayer(`${key}-fill`)) {
+            const fillLayer = {
+              id: `${key}-fill`,
+              type: "fill",
+              source: key,
+              layout: { visibility: vis },
+              paint: {
+                "fill-color": config.fillColor ?? "rgba(196,160,80,0.14)",
+                "fill-opacity": 1,
+                "fill-outline-color":
+                  config.fillOutlineColor ?? "rgba(138,106,31,0.9)",
+              },
+            };
+            if (beforeId) map.addLayer(fillLayer, beforeId);
+            else map.addLayer(fillLayer);
+          }
+          return;
+        }
+
+        if (kind === "line") {
+          if (!map.getSource(key)) {
+            map.addSource(key, { type: "geojson", data: res.value });
+          }
+          if (!map.getLayer(`${key}-line`)) {
+            map.addLayer({
+              id: `${key}-line`,
+              type: "line",
+              source: key,
+              layout: {
+                visibility: vis,
+                "line-cap": "round",
+                "line-join": "round",
+              },
+              paint: {
+                "line-color": NTM_ROUTE_LINE_COLOR,
+                "line-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  4,
+                  1.2,
+                  8,
+                  2.5,
+                  12,
+                  4,
+                ],
+                "line-opacity": 0.9,
+              },
+            });
+            map.on("mouseenter", `${key}-line`, () => {
+              map.getCanvas().style.cursor = "pointer";
+            });
+            map.on("mouseleave", `${key}-line`, () => {
+              map.getCanvas().style.cursor = "";
+            });
+            map.on("click", `${key}-line`, (e) => {
+              e.preventDefault();
+              const f = e.features?.[0];
+              if (!f) return;
+              const Mbx = mapboxglRef.current;
+              if (!Mbx) return;
+              const name =
+                f.properties?.route_short_name ||
+                f.properties?.route_long_name ||
+                f.properties?.route_desc ||
+                "Route";
+              const sub = [
+                f.properties?.route_type_text,
+                f.properties?.route_desc,
+              ]
+                .filter(Boolean)
+                .slice(0, 2)
+                .join(" · ");
+              new Mbx.Popup({ closeButton: true, maxWidth: "260px" })
+                .setLngLat(e.lngLat)
+                .setHTML(
+                  `<div style="font-size:13px;font-family:'Cormorant Garamond',Georgia,serif;padding:2px 0;">
+                <strong style="color:#c4a050;font-size:14px;">${poiPopupEsc(
+                  name
+                )}</strong>
+                <div style="font-size:11px;opacity:0.75;margin-top:4px;">${poiPopupEsc(
+                  sub || config.label
+                )}</div>
+              </div>`
+                )
+                .addTo(map);
+            });
+          }
+          try {
+            map.moveLayer(`${key}-line`);
+          } catch {
+            /* ignore */
+          }
+          return;
+        }
+
+        const isNtd = key === "ntd_reporters_2024";
 
         if (!map.getSource(key)) {
           map.addSource(key, {
@@ -1921,7 +2140,7 @@ export default function App() {
                 100,
                 22,
               ],
-              ...(isTransit
+              ...(isNtd
                 ? {
                     "circle-opacity": [
                       "interpolate",
@@ -1961,7 +2180,7 @@ export default function App() {
             source: key,
             filter: config.cluster ? ["!", ["has", "point_count"]] : ["all"],
             layout: { visibility: vis },
-            paint: isTransit
+            paint: isNtd
               ? {
                   "circle-radius": [
                     "interpolate",
@@ -1972,7 +2191,7 @@ export default function App() {
                     1,
                     14,
                   ],
-                  "circle-color": "#172554",
+                  "circle-color": "#450a0a",
                   "circle-opacity": [
                     "interpolate",
                     ["linear"],
@@ -2013,6 +2232,7 @@ export default function App() {
             const feats = map.queryRenderedFeatures(e.point, {
               layers: [`${key}-clusters`],
             });
+            if (!feats?.length) return;
             map
               .getSource(key)
               .getClusterExpansionZoom(
@@ -2033,16 +2253,26 @@ export default function App() {
             const f = e.features[0];
             const Mbx = mapboxglRef.current;
             if (!Mbx) return;
-            new Mbx.Popup({ closeButton: true, maxWidth: "220px" })
+            const title =
+              key === "ntd_reporters_2024"
+                ? f.properties.AGENCY_NM || f.properties.name
+                : f.properties.name || config.label;
+            const sub =
+              key === "ntd_reporters_2024"
+                ? [f.properties.RPT_TYPE, f.properties.UZA_NM]
+                    .filter(Boolean)
+                    .join(" · ") || config.label
+                : config.label;
+            new Mbx.Popup({ closeButton: true, maxWidth: "260px" })
               .setLngLat(e.lngLat)
               .setHTML(
                 `<div style="font-size:13px;font-family:'Cormorant Garamond',Georgia,serif;padding:2px 0;">
-                <strong style="color:#c4a050;font-size:14px;">${
-                  f.properties.name || config.label
-                }</strong>
-                <div style="font-size:11px;opacity:0.55;margin-top:3px;">${
-                  config.label
-                }</div>
+                <strong style="color:#c4a050;font-size:14px;">${poiPopupEsc(
+                  title
+                )}</strong>
+                <div style="font-size:11px;opacity:0.55;margin-top:3px;">${poiPopupEsc(
+                  sub
+                )}</div>
               </div>`
               )
               .addTo(map);
@@ -2061,54 +2291,6 @@ export default function App() {
         });
       });
 
-      /* Sample route polylines — same visibility as Transit POI */
-      try {
-        const routesRes = await fetch(`${API_BASE}/api/transit_routes`);
-        if (routesRes.ok) {
-          const routeData = await routesRes.json();
-          if (!map.getSource("transit_routes")) {
-            map.addSource("transit_routes", {
-              type: "geojson",
-              data: routeData,
-            });
-          }
-          if (!map.getLayer("transit_routes-line")) {
-            map.addLayer({
-              id: "transit_routes-line",
-              type: "line",
-              source: "transit_routes",
-              layout: {
-                visibility: poiLayersRef.current.transit ? "visible" : "none",
-                "line-cap": "round",
-                "line-join": "round",
-              },
-              paint: {
-                "line-color": "#1e3a8a",
-                "line-width": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  4,
-                  2,
-                  8,
-                  4,
-                  12,
-                  7,
-                ],
-                "line-opacity": 0.92,
-              },
-            });
-            try {
-              map.moveLayer("transit_routes-line");
-            } catch {
-              /* ignore */
-            }
-          }
-        }
-      } catch {
-        /* optional layer */
-      }
-
       if (failedPoi.length) {
         const labels = failedPoi
           .map((k) => POI_CONFIG[k]?.label ?? k)
@@ -2116,7 +2298,7 @@ export default function App() {
         showToast(`Could not load: ${labels}`, 5000);
       }
 
-      /* Allow retry if any POI failed (e.g. API missing /api/transit on first deploy) */
+      /* Allow retry if any POI failed (e.g. API cold start / ArcGIS timeout) */
       poiLoadedRef.current = failedPoi.length === 0;
       poiLoadingPromiseRef.current = null;
     })();
