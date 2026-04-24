@@ -472,21 +472,22 @@ async function serveEsriGeoJson(req, res, serviceUrl, opts = {}) {
 
 app.get("/api/ntd_reporters_2024", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntd_reporters_2024, {
-    maxFeatures: Number(process.env.ESRI_NTD_MAX ?? 12000),
+    maxFeatures: Number(process.env.ESRI_NTD_MAX ?? 9000),
   })
 );
 
 app.get("/api/ntm_routes", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
-    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 10000),
-    extraQuery: "maxAllowableOffset=0.0002",
+    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 7500),
+    extraQuery: "maxAllowableOffset=0.00025",
   })
 );
 
 /** FTA group — Urbanized Areas (2020), FeatureServer layer 1 */
 app.get("/api/fta_admin_boundaries", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.fta_admin_uza_2020, {
-    maxFeatures: Number(process.env.ESRI_FTA_MAX ?? 5000),
+    maxFeatures: Number(process.env.ESRI_FTA_MAX ?? 4000),
+    extraQuery: "maxAllowableOffset=0.001",
   })
 );
 

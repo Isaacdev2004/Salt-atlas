@@ -9,18 +9,31 @@ export const getApiBase = () => {
   return window.location.origin.replace(/\/$/, "");
 };
 
-export function getSessionToken() {
+function readToken() {
   try {
-    return sessionStorage.getItem(TOKEN_KEY) || "";
+    return (
+      localStorage.getItem(TOKEN_KEY) ||
+      sessionStorage.getItem(TOKEN_KEY) ||
+      ""
+    );
   } catch {
     return "";
   }
 }
 
+export function getSessionToken() {
+  return readToken();
+}
+
 export function setSessionToken(token) {
   try {
-    if (token) sessionStorage.setItem(TOKEN_KEY, token);
-    else sessionStorage.removeItem(TOKEN_KEY);
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token);
+      sessionStorage.removeItem(TOKEN_KEY);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
   } catch {
     /* ignore private mode */
   }
@@ -28,6 +41,7 @@ export function setSessionToken(token) {
 
 export function clearSessionToken() {
   try {
+    localStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(TOKEN_KEY);
   } catch {
     /* ignore */
@@ -54,4 +68,21 @@ export async function apiFetch(path, options = {}) {
     headers.set("Content-Type", "application/json");
   }
   return fetch(url, { ...options, headers });
+}
+
+/** Regions bootstrap: retry for cold Render / flaky networks */
+export async function fetchRegionsWithRetry(maxAttempts = 4, delayMs = 1800) {
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await apiFetch("/api/regions");
+      return res;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+  }
+  throw lastErr;
 }

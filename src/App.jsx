@@ -1,6 +1,7 @@
 import {
   getApiBase,
   apiFetch,
+  fetchRegionsWithRetry,
   getSessionToken,
   setSessionToken,
   clearSessionToken,
@@ -60,6 +61,16 @@ const NTM_ROUTE_LINE_COLOR = [
   "#6b7280",
 ];
 
+/** Subset for legend (labels must stay in sync with NTM_ROUTE_LINE_COLOR) */
+const NTM_ROUTE_LEGEND = [
+  { label: "Bus", color: "#bab1b1" },
+  { label: "Commuter / heavy rail", color: "#a11e06" },
+  { label: "Intercity rail", color: "#4a0a0a" },
+  { label: "Light rail / streetcar", color: "#cb3b09" },
+  { label: "Ferry", color: "#0284c7" },
+  { label: "Other / trolley / tram", color: "#6b7280" },
+];
+
 const POI_CONFIG = {
   airports: {
     label: "Airports",
@@ -116,8 +127,9 @@ const POI_CONFIG = {
     endpoint: "/api/fta_admin_boundaries",
     kind: "fill",
     cluster: false,
-    fillColor: "rgba(196,160,80,0.14)",
-    fillOutlineColor: "rgba(138,106,31,0.9)",
+    fillColor: "#c4a050",
+    fillOpacity: 0.26,
+    fillOutlineColor: "#5c4810",
   },
 };
 
@@ -780,6 +792,48 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
           </button>
         );
       })}
+      {(poiLayers.ntd_reporters_2024 ||
+        poiLayers.ntm_routes ||
+        poiLayers.fta_admin_boundaries) && (
+        <div className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto">
+          {poiLayers.ntd_reporters_2024 ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">NTD 2024:</span>{" "}
+              Each dot is a reporting agency. Clusters summarize density when
+              zoomed out; zoom in to see individual agencies.
+            </div>
+          ) : null}
+          {poiLayers.ntm_routes ? (
+            <div>
+              <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
+                Route colors (National Transit Map)
+              </div>
+              <div className="space-y-1">
+                {NTM_ROUTE_LEGEND.map(({ label, color }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 text-[0.68rem] text-[rgba(240,236,227,0.82)]"
+                  >
+                    <span
+                      className="w-7 h-1.5 rounded-sm shrink-0"
+                      style={{ background: color }}
+                    />
+                    {label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {poiLayers.fta_admin_boundaries ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">FTA UZA:</span>{" "}
+              Urbanized areas (2020) sit under the county layer. Use{" "}
+              <b className="text-[rgba(240,236,227,0.85)]">View layer → None</b>{" "}
+              and zoom in to see fill and outlines most clearly.
+            </div>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }
@@ -1333,8 +1387,8 @@ export default function App() {
   const poiLayersRef = useRef(
     Object.fromEntries(Object.keys(POI_CONFIG).map((k) => [k, false]))
   );
-  const poiLoadedRef = useRef(false);
-  const poiLoadingPromiseRef = useRef(null);
+  /** Tracks which infrastructure layer keys have been fetched + added to the map */
+  const poiKeysLoadedRef = useRef(new Set());
   const lastPoiSelectionRef = useRef(
     Object.fromEntries(Object.keys(POI_CONFIG).map((k) => [k, false]))
   );
@@ -1514,7 +1568,7 @@ export default function App() {
             const regionsUrl = `${API_BASE}/api/regions`;
             let regionsRes;
             try {
-              regionsRes = await apiFetch("/api/regions");
+              regionsRes = await fetchRegionsWithRetry();
             } catch (fetchErr) {
               if (cancelled) return;
               const builtInApi = import.meta.env.VITE_API_URL;
@@ -2130,35 +2184,50 @@ export default function App() {
 
   /*  POI  */
 
-  const ensurePoiLoaded = useCallback(async () => {
-    if (poiLoadedRef.current) return;
-    if (poiLoadingPromiseRef.current) return poiLoadingPromiseRef.current;
-    const map = mapRef.current;
-    if (!map) return;
+  /** Load only the requested infrastructure keys (lazy — avoids waiting on every layer). */
+  const loadPoiInfrastructure = useCallback(
+    async (requestedKeys) => {
+      const map = mapRef.current;
+      if (!map) return;
 
-    poiLoadingPromiseRef.current = (async () => {
+      const keysToLoad = [...new Set(requestedKeys)].filter(
+        (k) => POI_CONFIG[k] && !poiKeysLoadedRef.current.has(k)
+      );
+      if (!keysToLoad.length) return;
+
       if (!map.loaded())
         await new Promise((resolve) => map.once("load", resolve));
-      const API_BASE = getApiBase();
-      const poiEntries = Object.entries(POI_CONFIG);
-      const results = await Promise.allSettled(
-        poiEntries.map(([, cfg]) =>
-          apiFetch(cfg.endpoint).then((r) => {
-            if (!r.ok) throw new Error(`${r.status}`);
-            return r.json();
-          })
-        )
+
+      const slow = keysToLoad.some((k) =>
+        ["ntd_reporters_2024", "ntm_routes", "fta_admin_boundaries"].includes(k)
       );
-      const visMap = poiLayersRef.current;
+      if (slow) {
+        showToast(
+          "Loading selected USDOT layers (first server fetch can take 30–90s; later toggles use cache)…",
+          7000
+        );
+      }
+
+      const results = await Promise.allSettled(
+        keysToLoad.map((key) => {
+          const cfg = POI_CONFIG[key];
+          return apiFetch(cfg.endpoint).then(async (r) => {
+            if (!r.ok) throw new Error(`${r.status}`);
+            const data = await r.json();
+            return { key, config: cfg, data };
+          });
+        })
+      );
 
       const failedPoi = [];
-      poiEntries.forEach(([key, config], idx) => {
-        const res = results[idx];
+      results.forEach((res, idx) => {
+        const key = keysToLoad[idx];
         if (res.status === "rejected") {
           failedPoi.push(key);
           return;
         }
-        const vis = visMap[key] ? "visible" : "none";
+        const { config, data } = res.value;
+        const vis = poiLayersRef.current[key] ? "visible" : "none";
         const kind = config.kind ?? "cluster";
 
         if (kind === "fill") {
@@ -2166,7 +2235,7 @@ export default function App() {
             ? "counties-fill"
             : undefined;
           if (!map.getSource(key)) {
-            map.addSource(key, { type: "geojson", data: res.value });
+            map.addSource(key, { type: "geojson", data });
           }
           if (!map.getLayer(`${key}-fill`)) {
             const fillLayer = {
@@ -2175,21 +2244,22 @@ export default function App() {
               source: key,
               layout: { visibility: vis },
               paint: {
-                "fill-color": config.fillColor ?? "rgba(196,160,80,0.14)",
-                "fill-opacity": 1,
+                "fill-color": config.fillColor ?? "#c4a050",
+                "fill-opacity": config.fillOpacity ?? 0.26,
                 "fill-outline-color":
-                  config.fillOutlineColor ?? "rgba(138,106,31,0.9)",
+                  config.fillOutlineColor ?? "rgba(92,72,16,0.95)",
               },
             };
             if (beforeId) map.addLayer(fillLayer, beforeId);
             else map.addLayer(fillLayer);
           }
+          poiKeysLoadedRef.current.add(key);
           return;
         }
 
         if (kind === "line") {
           if (!map.getSource(key)) {
-            map.addSource(key, { type: "geojson", data: res.value });
+            map.addSource(key, { type: "geojson", data });
           }
           if (!map.getLayer(`${key}-line`)) {
             map.addLayer({
@@ -2261,6 +2331,7 @@ export default function App() {
           } catch {
             /* ignore */
           }
+          poiKeysLoadedRef.current.add(key);
           return;
         }
 
@@ -2269,7 +2340,7 @@ export default function App() {
         if (!map.getSource(key)) {
           map.addSource(key, {
             type: "geojson",
-            data: res.value,
+            data,
             cluster: config.cluster,
             clusterMaxZoom: 8,
             clusterRadius: 20,
@@ -2443,6 +2514,7 @@ export default function App() {
             }
           }
         });
+        poiKeysLoadedRef.current.add(key);
       });
 
       if (failedPoi.length) {
@@ -2451,20 +2523,15 @@ export default function App() {
           .join(", ");
         showToast(`Could not load: ${labels}`, 5000);
       }
-
-      /* Allow retry if any POI failed (e.g. API cold start / ArcGIS timeout) */
-      poiLoadedRef.current = failedPoi.length === 0;
-      poiLoadingPromiseRef.current = null;
-    })();
-
-    return poiLoadingPromiseRef.current;
-  }, [showToast]);
+    },
+    [showToast]
+  );
 
   const handlePoiToggle = (key) => {
     setPoiLayers((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       poiLayersRef.current = next;
-      if (next[key]) ensurePoiLoaded();
+      if (next[key]) void loadPoiInfrastructure([key]);
       return next;
     });
   };
@@ -2495,7 +2562,9 @@ export default function App() {
       );
       poiLayersRef.current = nextLayers;
       setPoiLayers(nextLayers);
-      ensurePoiLoaded();
+      void loadPoiInfrastructure(
+        Object.keys(POI_CONFIG).filter((k) => nextLayers[k])
+      );
     }
     showToast(next ? "Infrastructure shown" : "Infrastructure hidden", 1600);
   };
