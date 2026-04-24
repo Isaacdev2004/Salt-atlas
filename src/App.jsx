@@ -25,7 +25,7 @@ const layerLabel = {
   score_population: "Population",
   score_income: "Median Income",
   score_business: "Business Count",
-  score_transit: "Transit supply (county)",
+  score_transit: "Transit Agencies",
 };
 
 /**
@@ -961,7 +961,7 @@ function HoverCard({ feature, position, visible }) {
             ["Population", fmtNum(p.raw_population)],
             ["Median Income", fmtCurrency(p.raw_median_income)],
             ["Business Count", fmtNumFull(p.raw_business_count)],
-            ["Agencies (county data)", fmtNumFull(p.raw_transit_agencies)],
+            ["Transit Agencies", fmtNumFull(p.raw_transit_agencies)],
           ].map(([label, val]) => (
             <div
               key={label}
@@ -1294,7 +1294,7 @@ function RegionDetailPanel({ p, onClose }) {
           },
           {
             icon: "🚌",
-            name: "Transit supply (county)",
+            name: "Transit Agencies",
             sub:
               "From the county data row: agencies per 100k residents, normalized for scoring. USDOT map layers are separate (Infrastructure toggles).",
             val: fmtNumFull(p.raw_transit_agencies),
