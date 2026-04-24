@@ -1,8 +1,9 @@
 import {
   getApiBase,
-  apiFetch,
+  apiFetchWithRetry,
   fetchRegionsWithRetry,
   fetchAuthStatusWithRetry,
+  siteLoginWithRetry,
   getSessionToken,
   setSessionToken,
   clearSessionToken,
@@ -80,7 +81,7 @@ const NTD_RPT_MODULE_CIRCLE_COLOR = [
   "asset",
   "#7c3aed",
   "tribe",
-  "#9ca3af",
+  "#2563eb",
   "#64748b",
 ];
 
@@ -88,7 +89,24 @@ const NTD_REPORTER_LEGEND = [
   { label: "Urban", color: "#991b1b" },
   { label: "Rural", color: "#22c55e" },
   { label: "Asset", color: "#7c3aed" },
-  { label: "Tribe", color: "#9ca3af" },
+  { label: "Tribe", color: "#2563eb" },
+];
+
+/** FTA Urbanized Areas (2020) — fill by `POP`, same breaks as USDOT web map. */
+const FTA_UZA_FILL_COLOR = [
+  "step",
+  ["coalesce", ["get", "POP"], 0],
+  "rgb(205,224,202)",
+  200001,
+  "rgb(130,182,188)",
+  1000001,
+  "rgb(75,126,152)",
+];
+
+const FTA_UZA_LEGEND = [
+  { label: "50k – 200k population", color: "rgb(205,224,202)" },
+  { label: "200k – 1 million", color: "rgb(130,182,188)" },
+  { label: "Over 1 million", color: "rgb(75,126,152)" },
 ];
 
 const POI_CONFIG = {
@@ -147,9 +165,9 @@ const POI_CONFIG = {
     endpoint: "/api/fta_admin_boundaries",
     kind: "fill",
     cluster: false,
-    fillColor: "#c4a050",
-    fillOpacity: 0.26,
-    fillOutlineColor: "#5c4810",
+    fillColor: "rgb(205,224,202)",
+    fillOpacity: 0.48,
+    fillOutlineColor: "rgba(100,110,120,0.45)",
   },
 };
 
@@ -864,11 +882,33 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
             </div>
           ) : null}
           {poiLayers.fta_admin_boundaries ? (
-            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
-              <span className="text-[#c4a050] font-semibold">FTA UZA:</span>{" "}
-              Urbanized areas (2020) sit under the county layer. Use{" "}
-              <b className="text-[rgba(240,236,227,0.85)]">View layer → None</b>{" "}
-              and zoom in to see fill and outlines most clearly.
+            <div>
+              <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
+                FTA administrative boundaries
+              </div>
+              <div className="text-[0.6rem] text-[rgba(240,236,227,0.55)] mb-1.5">
+                Urbanized areas (2020), shaded by population (official FTA
+                symbology)
+              </div>
+              <div className="space-y-1 mb-2">
+                {FTA_UZA_LEGEND.map(({ label, color }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 text-[0.68rem] text-[rgba(240,236,227,0.82)]"
+                  >
+                    <span
+                      className="w-6 h-3.5 rounded-sm shrink-0 border border-[rgba(240,236,227,0.2)]"
+                      style={{ background: color }}
+                    />
+                    {label}
+                  </div>
+                ))}
+              </div>
+              <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+                Polygons sit under the county fill. Use{" "}
+                <b className="text-[rgba(240,236,227,0.85)]">View layer → None</b>{" "}
+                and zoom in for the clearest view.
+              </div>
             </div>
           ) : null}
         </div>
@@ -1334,11 +1374,7 @@ function SitePasswordGate({ apiBase, onSuccess, sessionDays = 30 }) {
     setBusy(true);
     setErr("");
     try {
-      const r = await fetch(`${apiBase}/api/site-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pwd }),
-      });
+      const r = await siteLoginWithRetry(apiBase, pwd);
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.ok) {
         setErr(typeof j.error === "string" ? j.error : "Incorrect password");
@@ -1353,8 +1389,13 @@ function SitePasswordGate({ apiBase, onSuccess, sessionDays = 30 }) {
       setSessionToken(j.token);
       setPwd("");
       onSuccess();
-    } catch {
-      setErr("Could not reach the server");
+    } catch (e) {
+      const aborted = e?.name === "AbortError";
+      setErr(
+        aborted
+          ? "Login request timed out—wait a few seconds and tap Unlock again."
+          : "Could not reach the server after several tries. If the API host was asleep (e.g. Render free tier), wait 30–60s and retry."
+      );
       setBusy(false);
     }
   };
@@ -2260,15 +2301,15 @@ export default function App() {
       );
       if (slow) {
         showToast(
-          "Loading selected USDOT layers (first server fetch can take 30–90s; later toggles use cache)…",
-          7000
+          "Loading USDOT layers (first request can take 20–90s while the API fetches Esri data; repeats use server cache)…",
+          8000
         );
       }
 
       const results = await Promise.allSettled(
         keysToLoad.map((key) => {
           const cfg = POI_CONFIG[key];
-          return apiFetch(cfg.endpoint).then(async (r) => {
+          return apiFetchWithRetry(cfg.endpoint).then(async (r) => {
             if (!r.ok) throw new Error(`${r.status}`);
             const data = await r.json();
             return { key, config: cfg, data };
@@ -2291,6 +2332,7 @@ export default function App() {
           const beforeId = map.getLayer("counties-fill")
             ? "counties-fill"
             : undefined;
+          const isFtaUza = key === "fta_admin_boundaries";
           if (!map.getSource(key)) {
             map.addSource(key, { type: "geojson", data });
           }
@@ -2300,12 +2342,19 @@ export default function App() {
               type: "fill",
               source: key,
               layout: { visibility: vis },
-              paint: {
-                "fill-color": config.fillColor ?? "#c4a050",
-                "fill-opacity": config.fillOpacity ?? 0.26,
-                "fill-outline-color":
-                  config.fillOutlineColor ?? "rgba(92,72,16,0.95)",
-              },
+              paint: isFtaUza
+                ? {
+                    "fill-color": FTA_UZA_FILL_COLOR,
+                    "fill-opacity": config.fillOpacity ?? 0.48,
+                    "fill-outline-color":
+                      config.fillOutlineColor ?? "rgba(100,110,120,0.45)",
+                  }
+                : {
+                    "fill-color": config.fillColor ?? "#c4a050",
+                    "fill-opacity": config.fillOpacity ?? 0.26,
+                    "fill-outline-color":
+                      config.fillOutlineColor ?? "rgba(92,72,16,0.95)",
+                  },
             };
             if (beforeId) map.addLayer(fillLayer, beforeId);
             else map.addLayer(fillLayer);

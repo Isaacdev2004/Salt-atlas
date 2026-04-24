@@ -70,17 +70,102 @@ export async function apiFetch(path, options = {}) {
   return fetch(url, { ...options, headers });
 }
 
-/** Regions bootstrap: retry for cold Render / flaky networks */
-export async function fetchRegionsWithRetry(maxAttempts = 4, delayMs = 1800) {
+/** Regions bootstrap: retry + long timeout for cold Render (service wake-up can exceed 60s). */
+export async function fetchRegionsWithRetry(maxAttempts = 6, delayMs = 2500) {
+  const timeoutMs = 90000;
   let lastErr = null;
+  let lastRes = null;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await apiFetch("/api/regions");
+      const res = await apiFetch("/api/regions", { signal: ctrl.signal });
+      clearTimeout(timer);
+      lastRes = res;
+      if (res.ok) return res;
+      if ([502, 503, 504].includes(res.status) && attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, delayMs * attempt));
+        continue;
+      }
       return res;
     } catch (e) {
+      clearTimeout(timer);
       lastErr = e;
       if (attempt < maxAttempts) {
-        await new Promise((r) => setTimeout(r, delayMs));
+        await new Promise((r) => setTimeout(r, delayMs * attempt));
+      }
+    }
+  }
+  if (lastRes) return lastRes;
+  throw lastErr;
+}
+
+/**
+ * POST /api/site-login with retries (same failure modes as regions: sleeping host, TLS blips).
+ * @param {string} apiBase - e.g. https://salt-atlas.onrender.com
+ * @param {string} password
+ */
+export async function siteLoginWithRetry(apiBase, password, opts = {}) {
+  const maxAttempts = opts.maxAttempts ?? 5;
+  const delayMs = opts.delayMs ?? 2000;
+  const timeoutMs = opts.timeoutMs ?? 90000;
+  const base = apiBase.replace(/\/$/, "");
+  const url = `${base}/api/site-login`;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      return res;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+      if (attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, delayMs * attempt));
+      }
+    }
+  }
+  throw lastErr;
+}
+
+/**
+ * Authenticated fetch with retries (USDOT Esri proxy routes can be slow on first hit).
+ * @param {string} path
+ * @param {RequestInit} [fetchOpts] merged into apiFetch (e.g. signal is overwritten per attempt)
+ */
+export async function apiFetchWithRetry(path, fetchOpts = {}, retryOpts = {}) {
+  const maxAttempts = retryOpts.maxAttempts ?? 4;
+  const delayMs = retryOpts.delayMs ?? 2000;
+  const timeoutMs = retryOpts.timeoutMs ?? 120000;
+  const { signal: _ignored, ...rest } = fetchOpts;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await apiFetch(path, { ...rest, signal: ctrl.signal });
+      clearTimeout(timer);
+      const retryableHttp =
+        !res.ok &&
+        [502, 503, 504].includes(res.status) &&
+        attempt < maxAttempts;
+      if (retryableHttp) {
+        await new Promise((r) => setTimeout(r, delayMs * attempt));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+      if (attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, delayMs * attempt));
       }
     }
   }

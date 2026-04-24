@@ -11,6 +11,13 @@ const crypto = require("crypto");
 
 const CACHE_DIR = path.join(__dirname, "../data/cache");
 const DEFAULT_TTL_MS = Number(process.env.ESRI_CACHE_TTL_MS ?? 6 * 60 * 60 * 1000);
+const ESRI_FETCH_TIMEOUT_MS = Number(process.env.ESRI_FETCH_TIMEOUT_MS ?? 120000);
+const ESRI_PAGE_RETRIES = Number(process.env.ESRI_PAGE_RETRIES ?? 3);
+/** Fetch this many Esri pages concurrently (each page ≤2000 features). */
+const ESRI_PARALLEL_PAGES = Math.min(
+  8,
+  Math.max(1, Number(process.env.ESRI_PARALLEL_PAGES ?? 4))
+);
 
 /** Official USDOT-hosted FeatureServer layers (same as reference webmap). */
 const SERVICES = {
@@ -60,6 +67,47 @@ function stripForMapbox(fc) {
  * @param {number} [opts.maxFeatures]
  * @param {string} [opts.extraQuery] e.g. geometry simplification
  */
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function fetchEsriPage(serviceUrl, offset, take, extraSuffix) {
+  const q = new URLSearchParams({
+    where: "1=1",
+    outFields: "*",
+    returnGeometry: "true",
+    outSR: "4326",
+    f: "geojson",
+    resultOffset: String(offset),
+    resultRecordCount: String(take),
+  });
+  const url = `${serviceUrl}/query?${q.toString()}${extraSuffix}`;
+  let lastErr;
+  for (let attempt = 1; attempt <= ESRI_PAGE_RETRIES; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ESRI_FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Esri HTTP ${res.status}: ${txt.slice(0, 500)}`);
+      }
+      return await res.json();
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      if (attempt < ESRI_PAGE_RETRIES) {
+        await sleep(600 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
 async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   const maxFeatures = opts.maxFeatures ?? 8000;
   const pageSize = Math.min(2000, maxFeatures);
@@ -69,35 +117,43 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   const cached = readCache(cfile, DEFAULT_TTL_MS);
   if (cached) return stripForMapbox(cached);
 
+  const numPages = Math.ceil(maxFeatures / pageSize);
   const features = [];
-  let offset = 0;
 
-  while (offset < maxFeatures) {
-    const take = Math.min(pageSize, maxFeatures - offset);
-    const q = new URLSearchParams({
-      where: "1=1",
-      outFields: "*",
-      returnGeometry: "true",
-      outSR: "4326",
-      f: "geojson",
-      resultOffset: String(offset),
-      resultRecordCount: String(take),
-    });
-    const url = `${serviceUrl}/query?${q.toString()}${extraSuffix}`;
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Esri HTTP ${res.status}: ${txt.slice(0, 500)}`);
+  for (
+    let chunkStart = 0;
+    chunkStart < numPages;
+    chunkStart += ESRI_PARALLEL_PAGES
+  ) {
+    const pagePromises = [];
+    for (
+      let p = chunkStart;
+      p < Math.min(chunkStart + ESRI_PARALLEL_PAGES, numPages);
+      p++
+    ) {
+      const offset = p * pageSize;
+      const take = Math.min(pageSize, maxFeatures - offset);
+      pagePromises.push(fetchEsriPage(serviceUrl, offset, take, extraSuffix));
     }
-    const gj = await res.json();
-    const batch = gj.features || [];
-    if (!batch.length) break;
-    features.push(...batch);
-    offset += batch.length;
-    if (batch.length < take) break;
+    const jsonChunks = await Promise.all(pagePromises);
+    let sawShortPage = false;
+    for (const gj of jsonChunks) {
+      const batch = gj.features || [];
+      if (!batch.length) {
+        sawShortPage = true;
+        break;
+      }
+      features.push(...batch);
+      if (batch.length < pageSize) sawShortPage = true;
+    }
+    if (sawShortPage) break;
+    if (features.length >= maxFeatures) break;
   }
 
-  const out = stripForMapbox({ type: "FeatureCollection", features });
+  const trimmed =
+    features.length > maxFeatures ? features.slice(0, maxFeatures) : features;
+
+  const out = stripForMapbox({ type: "FeatureCollection", features: trimmed });
   writeCache(cfile, out);
   return out;
 }
