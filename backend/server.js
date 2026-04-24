@@ -486,15 +486,23 @@ app.get("/api/ntd_reporters_2024", (req, res) =>
   })
 );
 
-app.get("/api/ntm_routes", (req, res) =>
-  serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
-    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 8000),
-    /* No maxAllowableOffset — Esri simplification was fragmenting lines */
+app.get("/api/ntm_routes", (req, res) => {
+  /**
+   * Full-precision national routes are ~90MB+ JSON — browsers and proxies fail.
+   * Light Esri simplification (~0.00008°) keeps lines connected while cutting size ~20×.
+   * Set ESRI_NTM_MAXALLOWABLE_OFFSET=0 to disable (large payload / slow).
+   */
+  const rawOff = (process.env.ESRI_NTM_MAXALLOWABLE_OFFSET ?? "0.00008").trim();
+  const useOff = rawOff !== "" && rawOff !== "0";
+  const extraQuery = useOff ? `maxAllowableOffset=${encodeURIComponent(rawOff)}` : "";
+  return serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
+    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 5000),
     quantizeCoordinateDecimals: Number(
       process.env.ESRI_NTM_COORD_DECIMALS ?? 4
     ),
-  })
-);
+    ...(extraQuery ? { extraQuery } : {}),
+  });
+});
 
 /** FTA group — Urbanized Areas (2020), FeatureServer layer 1 */
 app.get("/api/fta_admin_boundaries", (req, res) =>

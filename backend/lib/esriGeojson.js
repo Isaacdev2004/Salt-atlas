@@ -112,6 +112,8 @@ async function fetchEsriPage(serviceUrl, offset, take, extraSuffix) {
     f: "geojson",
     resultOffset: String(offset),
     resultRecordCount: String(take),
+    /** Required for consistent resultOffset paging on hosted FeatureServer */
+    orderByFields: "OBJECTID",
   });
   const url = `${serviceUrl}/query?${q.toString()}${extraSuffix}`;
   let lastErr;
@@ -204,7 +206,11 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   if (qDec != null) quantizeGeoJsonFeatures(trimmed, qDec);
 
   const out = stripForMapbox({ type: "FeatureCollection", features: trimmed });
-  writeCache(cfile, out);
+  try {
+    writeCache(cfile, out);
+  } catch (e) {
+    console.warn("[esri] disk cache write failed:", e?.message || e);
+  }
   return out;
 }
 

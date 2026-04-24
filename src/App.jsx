@@ -2334,6 +2334,7 @@ export default function App() {
           failedPoi.push(key);
           return;
         }
+        try {
         const { config, data } = res.value;
         const vis = poiLayersRef.current[key] ? "visible" : "none";
         const kind = config.kind ?? "cluster";
@@ -2631,6 +2632,32 @@ export default function App() {
           }
         });
         poiKeysLoadedRef.current.add(key);
+        } catch (e) {
+          console.error("[infra layer]", key, e);
+          failedPoi.push(key);
+          for (const lid of [
+            `${key}-line`,
+            `${key}-fill`,
+            `${key}-clusters`,
+            `${key}-cluster-count`,
+            `${key}-points`,
+          ]) {
+            if (map.getLayer(lid)) {
+              try {
+                map.removeLayer(lid);
+              } catch {
+                /* ignore */
+              }
+            }
+          }
+          if (map.getSource(key)) {
+            try {
+              map.removeSource(key);
+            } catch {
+              /* ignore */
+            }
+          }
+        }
       });
 
       if (failedPoi.length) {
