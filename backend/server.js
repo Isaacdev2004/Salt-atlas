@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const compression = require("compression");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const Papa = require("papaparse");
@@ -258,8 +259,94 @@ const loadGeoJSON = async (layer) => {
 };
 
 // ---------------------------------------------------------------------------
+// Optional site gate (set SITE_PASSWORD on the host — never commit it)
+// ---------------------------------------------------------------------------
+const SITE_PASSWORD = (process.env.SITE_PASSWORD || "").trim();
+
+function siteAuthEnabled() {
+  return Boolean(SITE_PASSWORD);
+}
+
+function siteSessionSecret() {
+  const extra = (process.env.SITE_AUTH_SECRET || "").trim();
+  if (extra) return extra;
+  if (!SITE_PASSWORD) return "";
+  return crypto
+    .createHash("sha256")
+    .update(`salt-atlas-site|${SITE_PASSWORD}`, "utf8")
+    .digest("hex");
+}
+
+function makeSiteSessionToken() {
+  const secret = siteSessionSecret();
+  if (!secret) return "";
+  const exp = Date.now() + 30 * 86400000;
+  const payload = Buffer.from(JSON.stringify({ exp }), "utf8").toString(
+    "base64url"
+  );
+  const sig = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("base64url");
+  return `${payload}.${sig}`;
+}
+
+function verifySiteSessionToken(token) {
+  const secret = siteSessionSecret();
+  if (!secret || !token || typeof token !== "string") return false;
+  const dot = token.indexOf(".");
+  if (dot < 1) return false;
+  const payload = token.slice(0, dot);
+  const sig = token.slice(dot + 1);
+  try {
+    const expected = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("base64url");
+    const a = Buffer.from(sig, "utf8");
+    const b = Buffer.from(expected, "utf8");
+    if (a.length !== b.length) return false;
+    if (!crypto.timingSafeEqual(a, b)) return false;
+    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    return typeof exp === "number" && Date.now() < exp;
+  } catch {
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Routes
 // ---------------------------------------------------------------------------
+
+app.get("/api/auth-status", (req, res) => {
+  res.json({ authRequired: siteAuthEnabled() });
+});
+
+app.post("/api/site-login", (req, res) => {
+  if (!siteAuthEnabled()) {
+    return res.json({ ok: true, token: makeSiteSessionToken() });
+  }
+  const password = req.body?.password;
+  if (typeof password !== "string" || password !== SITE_PASSWORD) {
+    return res.status(401).json({ ok: false, error: "Invalid password" });
+  }
+  return res.json({ ok: true, token: makeSiteSessionToken() });
+});
+
+app.use((req, res, next) => {
+  const p = req.path || "";
+  if (!p.startsWith("/api/")) return next();
+  if (p === "/api/auth-status" || p === "/api/site-login") return next();
+  if (!siteAuthEnabled()) return next();
+  const m = (req.headers.authorization || "").match(/^Bearer\s+(\S+)/i);
+  if (!m || !verifySiteSessionToken(m[1])) {
+    return res.status(401).json({
+      error: "Unauthorized",
+      code: "SITE_AUTH_REQUIRED",
+    });
+  }
+  next();
+});
 
 /**
  * GET /api/regions

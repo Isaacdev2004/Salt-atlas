@@ -1,4 +1,10 @@
-import { getApiBase } from "./config/api";
+import {
+  getApiBase,
+  apiFetch,
+  getSessionToken,
+  setSessionToken,
+  clearSessionToken,
+} from "./config/api";
 import { useEffect, useRef, useState, useCallback } from "react";
 
 /* Constants */
@@ -1223,6 +1229,79 @@ function RegionDetailPanel({ p, onClose }) {
   );
 }
 
+/*  Site password gate (API must set SITE_PASSWORD)  */
+
+function SitePasswordGate({ apiBase, onSuccess }) {
+  const [pwd, setPwd] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    try {
+      const r = await fetch(`${apiBase}/api/site-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pwd }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) {
+        setErr(typeof j.error === "string" ? j.error : "Incorrect password");
+        setBusy(false);
+        return;
+      }
+      if (!j.token) {
+        setErr("Server did not return a session");
+        setBusy(false);
+        return;
+      }
+      setSessionToken(j.token);
+      setPwd("");
+      onSuccess();
+    } catch {
+      setErr("Could not reach the server");
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0d1f35] px-6 py-12 font-serif">
+      <div className="w-full max-w-md rounded-xl border border-[rgba(196,160,80,0.35)] bg-[rgba(10,26,47,0.92)] p-8 shadow-2xl">
+        <h1 className="text-xl font-bold tracking-[0.2em] text-[#f0ece3] text-center mb-1">
+          <span className="text-[#c4a050]">SALT</span> ATLAS
+        </h1>
+        <p className="text-center text-sm text-[rgba(240,236,227,0.55)] mb-8 tracking-wide">
+          Enter the access password to continue
+        </p>
+        <form onSubmit={submit} className="space-y-4">
+          <input
+            type="password"
+            autoComplete="current-password"
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+            placeholder="Password"
+            className="w-full rounded-md border border-[rgba(196,160,80,0.35)] bg-[rgba(13,31,53,0.5)] px-4 py-3 text-[#f0ece3] placeholder:text-[rgba(240,236,227,0.35)] outline-none focus:border-[#c4a050]"
+          />
+          {err ? (
+            <p className="text-sm text-red-300 text-center" role="alert">
+              {err}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={busy || !pwd.trim()}
+            className="w-full py-3 rounded-md bg-[#c4a050] text-[#0d1f35] text-xs font-bold tracking-[0.15em] uppercase hover:bg-[#d4b060] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {busy ? "Checking…" : "Unlock"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 /* 
    Main App
  */
@@ -1300,6 +1379,9 @@ export default function App() {
   });
   const [filterTransitAgenciesOnly, setFilterTransitAgenciesOnly] =
     useState(false);
+  /** `checking` → ask API; `login` → show password form; `ready` → load map */
+  const [siteAuthPhase, setSiteAuthPhase] = useState("checking");
+  const [siteAuthRequired, setSiteAuthRequired] = useState(false);
 
   // Keep refs in sync
   setHoverFeatureRef.current = setHoverFeature;
@@ -1312,6 +1394,36 @@ export default function App() {
   useEffect(() => {
     poiLayersRef.current = poiLayers;
   }, [poiLayers]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const base = getApiBase();
+        const r = await fetch(`${base}/api/auth-status`);
+        const j = await r.json().catch(() => ({}));
+        if (cancelled) return;
+        const required = Boolean(j.authRequired);
+        setSiteAuthRequired(required);
+        if (!required) {
+          setSiteAuthPhase("ready");
+          return;
+        }
+        if (getSessionToken()) {
+          setSiteAuthPhase("ready");
+          return;
+        }
+        setSiteAuthPhase("login");
+        setLoading(false);
+      } catch {
+        if (!cancelled) setSiteAuthPhase("ready");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(
     () => () => {
       clearTimeout(updateMapTimeoutRef.current);
@@ -1350,6 +1462,7 @@ export default function App() {
   /*  Map init (single mount; `activeLayer` paint is updated in a separate effect)  */
 
   useEffect(() => {
+    if (siteAuthPhase !== "ready") return;
     let cancelled = false;
     let map = null;
 
@@ -1401,7 +1514,7 @@ export default function App() {
             const regionsUrl = `${API_BASE}/api/regions`;
             let regionsRes;
             try {
-              regionsRes = await fetch(regionsUrl);
+              regionsRes = await apiFetch("/api/regions");
             } catch (fetchErr) {
               if (cancelled) return;
               const builtInApi = import.meta.env.VITE_API_URL;
@@ -1418,11 +1531,26 @@ export default function App() {
             if (cancelled) return;
 
             if (!regionsRes.ok) {
-              const detail = await regionsRes.text();
+              const errTxt = await regionsRes.text();
+              let errJson = null;
+              try {
+                errJson = JSON.parse(errTxt);
+              } catch {
+                /* plain text body */
+              }
+              if (
+                regionsRes.status === 401 &&
+                errJson?.code === "SITE_AUTH_REQUIRED"
+              ) {
+                clearSessionToken();
+                setSiteAuthPhase("login");
+                setLoading(false);
+                return;
+              }
               setBootstrapError(
                 `Could not load region data (${regionsRes.status}). Check VITE_API_URL and that the API is running.`
               );
-              if (import.meta.env.DEV) console.error("[regions]", detail);
+              if (import.meta.env.DEV) console.error("[regions]", errTxt);
               showToast("Failed to load regions from API", 5000);
               setLoading(false);
               return;
@@ -1758,7 +1886,7 @@ export default function App() {
     };
     // `activeLayer` is applied after load via the choropleth effect — do not remount the map when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showToast]);
+  }, [showToast, siteAuthPhase]);
 
   /* Reactive: choropleth layer color  */
   useEffect(() => {
@@ -2015,7 +2143,7 @@ export default function App() {
       const poiEntries = Object.entries(POI_CONFIG);
       const results = await Promise.allSettled(
         poiEntries.map(([, cfg]) =>
-          fetch(`${API_BASE}${cfg.endpoint}`).then((r) => {
+          apiFetch(cfg.endpoint).then((r) => {
             if (!r.ok) throw new Error(`${r.status}`);
             return r.json();
           })
@@ -2505,6 +2633,28 @@ export default function App() {
 
   /*  Render  */
 
+  if (siteAuthPhase === "checking") {
+    return (
+      <div className="flex flex-col h-full w-full items-center justify-center bg-[#0d1f35] text-[#f0ece3] font-serif">
+        <p className="text-sm tracking-[0.25em] uppercase text-[rgba(240,236,227,0.65)]">
+          Checking access…
+        </p>
+      </div>
+    );
+  }
+
+  if (siteAuthPhase === "login") {
+    return (
+      <SitePasswordGate
+        apiBase={getApiBase()}
+        onSuccess={() => {
+          setLoading(true);
+          setSiteAuthPhase("ready");
+        }}
+      />
+    );
+  }
+
   const p = selectedRegion?.properties ?? {};
 
   return (
@@ -2534,6 +2684,19 @@ export default function App() {
           </span>
         </div>
         <div className="ml-auto flex items-center gap-3">
+          {siteAuthRequired ? (
+            <button
+              type="button"
+              onClick={() => {
+                clearSessionToken();
+                setSiteAuthPhase("login");
+                setLoading(false);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[rgba(240,236,227,0.28)] text-[#f0ece3] text-xs tracking-[0.1em] font-semibold hover:bg-[rgba(240,236,227,0.08)] transition-colors font-serif cursor-pointer text-sm font-medium"
+            >
+              Sign out
+            </button>
+          ) : null}
           <button
             onClick={() => {
               setHelpStep(0);
