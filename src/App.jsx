@@ -2309,7 +2309,17 @@ export default function App() {
       const results = await Promise.allSettled(
         keysToLoad.map((key) => {
           const cfg = POI_CONFIG[key];
-          return apiFetchWithRetry(cfg.endpoint).then(async (r) => {
+          const heavy =
+            key === "ntm_routes" ||
+            key === "ntd_reporters_2024" ||
+            key === "fta_admin_boundaries";
+          return apiFetchWithRetry(
+            cfg.endpoint,
+            {},
+            heavy
+              ? { timeoutMs: 180000, maxAttempts: 3, delayMs: 2500 }
+              : {}
+          ).then(async (r) => {
             if (!r.ok) throw new Error(`${r.status}`);
             const data = await r.json();
             return { key, config: cfg, data };

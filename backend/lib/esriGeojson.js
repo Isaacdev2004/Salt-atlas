@@ -13,10 +13,13 @@ const CACHE_DIR = path.join(__dirname, "../data/cache");
 const DEFAULT_TTL_MS = Number(process.env.ESRI_CACHE_TTL_MS ?? 6 * 60 * 60 * 1000);
 const ESRI_FETCH_TIMEOUT_MS = Number(process.env.ESRI_FETCH_TIMEOUT_MS ?? 120000);
 const ESRI_PAGE_RETRIES = Number(process.env.ESRI_PAGE_RETRIES ?? 3);
-/** Fetch this many Esri pages concurrently (each page ≤2000 features). */
+/**
+ * Esri pages fetched in parallel (each ≤2000 features). Default **1** (sequential):
+ * parallel bursts often trigger throttling or proxy timeouts; set 3–4 only on capable hosts.
+ */
 const ESRI_PARALLEL_PAGES = Math.min(
   8,
-  Math.max(1, Number(process.env.ESRI_PARALLEL_PAGES ?? 4))
+  Math.max(1, Number(process.env.ESRI_PARALLEL_PAGES ?? 1))
 );
 
 /** Official USDOT-hosted FeatureServer layers (same as reference webmap). */
@@ -61,11 +64,40 @@ function stripForMapbox(fc) {
   };
 }
 
+/** Round coordinates in-place to shrink JSON (helps Render / browser limits on NTM polylines). */
+function quantizeGeoJsonFeatures(features, decimals) {
+  if (!Array.isArray(features) || decimals == null || decimals < 0) return;
+  const q = (coord) =>
+    typeof coord[0] === "number"
+      ? coord.map((n) => Number(Number(n).toFixed(decimals)))
+      : coord.map(q);
+  const walk = (g) => {
+    if (!g?.coordinates) return;
+    const t = g.type;
+    if (t === "LineString") g.coordinates = q(g.coordinates);
+    else if (t === "MultiLineString")
+      g.coordinates = g.coordinates.map(q);
+    else if (t === "Polygon") g.coordinates = g.coordinates.map(q);
+    else if (t === "MultiPolygon")
+      g.coordinates = g.coordinates.map((poly) => poly.map(q));
+    else if (t === "Point" && Array.isArray(g.coordinates)) {
+      const [lon, lat] = g.coordinates;
+      g.coordinates = [
+        Number(Number(lon).toFixed(decimals)),
+        Number(Number(lat).toFixed(decimals)),
+      ];
+    }
+    else if (t === "MultiPoint") g.coordinates = q(g.coordinates);
+  };
+  for (const f of features) walk(f?.geometry);
+}
+
 /**
  * @param {string} serviceUrl FeatureServer layer URL (no trailing slash)
  * @param {object} opts
  * @param {number} [opts.maxFeatures]
  * @param {string} [opts.extraQuery] e.g. geometry simplification
+ * @param {number} [opts.quantizeCoordinateDecimals] round line/polygon coords (e.g. 4 for NTM)
  */
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -112,46 +144,64 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   const maxFeatures = opts.maxFeatures ?? 8000;
   const pageSize = Math.min(2000, maxFeatures);
   const extraSuffix = opts.extraQuery ? `&${opts.extraQuery}` : "";
-  const cacheKey = `${serviceUrl}|${maxFeatures}|${extraSuffix}`;
+  const qDec = Number.isFinite(Number(opts.quantizeCoordinateDecimals))
+    ? Math.min(8, Math.max(0, Math.round(Number(opts.quantizeCoordinateDecimals))))
+    : null;
+  const cacheKey = `${serviceUrl}|${maxFeatures}|${extraSuffix}|p${ESRI_PARALLEL_PAGES}|q${qDec ?? "x"}`;
   const cfile = cachePath(cacheKey);
   const cached = readCache(cfile, DEFAULT_TTL_MS);
   if (cached) return stripForMapbox(cached);
 
-  const numPages = Math.ceil(maxFeatures / pageSize);
   const features = [];
+  const numPages = Math.ceil(maxFeatures / pageSize);
 
-  for (
-    let chunkStart = 0;
-    chunkStart < numPages;
-    chunkStart += ESRI_PARALLEL_PAGES
-  ) {
-    const pagePromises = [];
-    for (
-      let p = chunkStart;
-      p < Math.min(chunkStart + ESRI_PARALLEL_PAGES, numPages);
-      p++
-    ) {
-      const offset = p * pageSize;
+  if (ESRI_PARALLEL_PAGES <= 1) {
+    let offset = 0;
+    while (offset < maxFeatures) {
       const take = Math.min(pageSize, maxFeatures - offset);
-      pagePromises.push(fetchEsriPage(serviceUrl, offset, take, extraSuffix));
-    }
-    const jsonChunks = await Promise.all(pagePromises);
-    let sawShortPage = false;
-    for (const gj of jsonChunks) {
+      const gj = await fetchEsriPage(serviceUrl, offset, take, extraSuffix);
       const batch = gj.features || [];
-      if (!batch.length) {
-        sawShortPage = true;
-        break;
-      }
+      if (!batch.length) break;
       features.push(...batch);
-      if (batch.length < pageSize) sawShortPage = true;
+      offset += batch.length;
+      if (batch.length < take) break;
     }
-    if (sawShortPage) break;
-    if (features.length >= maxFeatures) break;
+  } else {
+    for (
+      let chunkStart = 0;
+      chunkStart < numPages;
+      chunkStart += ESRI_PARALLEL_PAGES
+    ) {
+      const pagePromises = [];
+      for (
+        let p = chunkStart;
+        p < Math.min(chunkStart + ESRI_PARALLEL_PAGES, numPages);
+        p++
+      ) {
+        const offset = p * pageSize;
+        const take = Math.min(pageSize, maxFeatures - offset);
+        pagePromises.push(fetchEsriPage(serviceUrl, offset, take, extraSuffix));
+      }
+      const jsonChunks = await Promise.all(pagePromises);
+      let sawShortPage = false;
+      for (const gj of jsonChunks) {
+        const batch = gj.features || [];
+        if (!batch.length) {
+          sawShortPage = true;
+          break;
+        }
+        features.push(...batch);
+        if (batch.length < pageSize) sawShortPage = true;
+      }
+      if (sawShortPage) break;
+      if (features.length >= maxFeatures) break;
+    }
   }
 
   const trimmed =
     features.length > maxFeatures ? features.slice(0, maxFeatures) : features;
+
+  if (qDec != null) quantizeGeoJsonFeatures(trimmed, qDec);
 
   const out = stripForMapbox({ type: "FeatureCollection", features: trimmed });
   writeCache(cfile, out);

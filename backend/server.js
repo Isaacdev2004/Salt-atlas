@@ -488,8 +488,11 @@ app.get("/api/ntd_reporters_2024", (req, res) =>
 
 app.get("/api/ntm_routes", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
-    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 10000),
+    maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 8000),
     /* No maxAllowableOffset — Esri simplification was fragmenting lines */
+    quantizeCoordinateDecimals: Number(
+      process.env.ESRI_NTM_COORD_DECIMALS ?? 4
+    ),
   })
 );
 
