@@ -33,6 +33,48 @@ if (!conn) {
   process.exit(1);
 }
 
+if (!/^postgres(ql)?:\/\//i.test(conn.trim())) {
+  console.error(`❌ DATABASE_URL must be a full PostgreSQL URI starting with postgresql://
+   You pasted only a hostname or an invalid value. First characters are: ${JSON.stringify(
+     conn.trim().slice(0, 40)
+   )}
+
+   In Supabase: Settings → Database → copy the entire "Session pooler" connection string
+   (one line, includes postgres://, user, password, host, :6543, /postgres).`);
+  process.exit(1);
+}
+
+/** Direct db.*.supabase.co is often IPv6-only; Windows frequently hits ENOTFOUND. */
+function supabaseDirectHostHint(urlStr) {
+  try {
+    const normalized = urlStr.trim().replace(/^postgres:\/\//i, "postgresql://");
+    const u = new URL(normalized);
+    const h = u.hostname || "";
+    if (h.startsWith("db.") && h.endsWith(".supabase.co")) {
+      return `
+── Supabase connection tip ─────────────────────────────────────────
+Your DATABASE_URL uses the direct host:
+  db.<project-ref>.supabase.co (port 5432)
+
+On many Windows / IPv4-only networks that name does not resolve → ENOTFOUND.
+
+Fix:
+  1. Supabase Dashboard → Project Settings → Database
+  2. Under "Connection string", choose "Session mode" (pooler), port 6543
+     Host looks like: aws-0-<region>.pooler.supabase.com
+  3. Replace DATABASE_URL in backend/.env with that full URI (include password)
+  4. Run: npm run db:load
+
+Docs: https://supabase.com/docs/guides/database/connecting-to-postgres
+────────────────────────────────────────────────────────────────────
+`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "";
+}
+
 const root        = path.join(__dirname, "..");
 const derivedDir  = path.join(root, "data/derived");
 const regionsFile = path.join(derivedDir, "regions.csv");
@@ -99,7 +141,14 @@ const discoverPoiFiles = () => {
     ssl: isProd ? { rejectUnauthorized: false } : false,
   });
 
-  await client.connect();
+  try {
+    await client.connect();
+  } catch (e) {
+    console.error("❌ Could not connect to database:", e.message);
+    if (e.code === "ENOTFOUND") console.error(supabaseDirectHostHint(conn));
+    process.exit(1);
+  }
+
   console.log("🔌 Connected to database\n");
 
   try {

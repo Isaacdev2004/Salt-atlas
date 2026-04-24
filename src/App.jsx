@@ -1398,7 +1398,23 @@ export default function App() {
           if (cancelled) return;
           try {
             const API_BASE = getApiBase();
-            const regionsRes = await fetch(`${API_BASE}/api/regions`);
+            const regionsUrl = `${API_BASE}/api/regions`;
+            let regionsRes;
+            try {
+              regionsRes = await fetch(regionsUrl);
+            } catch (fetchErr) {
+              if (cancelled) return;
+              const builtInApi = import.meta.env.VITE_API_URL;
+              const hint = builtInApi
+                ? `The app tried: ${regionsUrl}. Check that the API is up (Render dashboard), uses HTTPS, and allows browser requests (CORS is open on this API).`
+                : `The app tried: ${regionsUrl}. This site has no VITE_API_URL, so it calls the same host as the map — Vercel does not serve /api. Rebuild with VITE_API_URL=https://your-api.onrender.com (your Render service URL, no trailing slash).`;
+              setBootstrapError(
+                `Could not reach the data API (${fetchErr?.message || "network error"}). ${hint}`
+              );
+              showToast("Failed to load regions from API", 5000);
+              setLoading(false);
+              return;
+            }
             if (cancelled) return;
 
             if (!regionsRes.ok) {
@@ -1408,6 +1424,16 @@ export default function App() {
               );
               if (import.meta.env.DEV) console.error("[regions]", detail);
               showToast("Failed to load regions from API", 5000);
+              setLoading(false);
+              return;
+            }
+
+            const ct = regionsRes.headers.get("content-type") || "";
+            if (!ct.includes("application/json")) {
+              setBootstrapError(
+                `Expected JSON from the API but got "${ct.slice(0, 40)}…" from ${regionsUrl}. Usually this means VITE_API_URL is unset and /api is hitting the static host (Vercel) instead of Render. Set VITE_API_URL to your backend origin and redeploy.`
+              );
+              showToast("Invalid response from API URL", 5000);
               setLoading(false);
               return;
             }
