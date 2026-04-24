@@ -2,6 +2,7 @@ import {
   getApiBase,
   apiFetch,
   fetchRegionsWithRetry,
+  fetchAuthStatusWithRetry,
   getSessionToken,
   setSessionToken,
   clearSessionToken,
@@ -26,49 +27,68 @@ const layerLabel = {
   score_transit: "Transit supply (county)",
 };
 
-/** Line colors aligned with USDOT National Transit Map route symbology */
+/**
+ * Line colors — `route_type_text` from USDOT NTAD_National_Transit_Map_Routes (GTFS-derived strings).
+ * Values are matched case-insensitively; see Esri `groupByFieldsForStatistics=route_type_text`.
+ */
 const NTM_ROUTE_LINE_COLOR = [
   "match",
-  ["coalesce", ["get", "route_type_text"], ""],
-  "Bus",
-  "#bab1b1",
-  "Commuter Rail",
-  "#a11e06",
-  "Heavy Rail",
-  "#a11e06",
-  "Intercity Rail",
-  "#4a0a0a",
-  "Light Rail",
-  "#cb3b09",
-  "Streetcar",
-  "#cb3b09",
-  "Cable Tram",
-  "#8b5cf6",
-  "Ferry",
+  ["downcase", ["coalesce", ["get", "route_type_text"], ""]],
+  "bus",
+  "#a8a29e",
+  "rail",
+  "#ea580c",
+  "subway, metro",
+  "#7f1d1d",
+  "tram, streetcar, light rail",
+  "#4ade80",
+  "ferry",
   "#0284c7",
-  "Funicular",
+  "cable tram",
+  "#15803d",
+  "aerial lift, suspended cable car",
+  "#38bdf8",
+  "funicular",
   "#64748b",
-  "Gondola",
-  "#64748b",
-  "Monorail",
-  "#64748b",
-  "Trolleybus",
-  "#6b7280",
-  "Air Service",
-  "#0ea5e9",
-  "Other",
+  "monorail",
+  "#94a3b8",
+  "trolleybus",
+  "#78716c",
   "#525252",
-  "#6b7280",
 ];
 
-/** Subset for legend (labels must stay in sync with NTM_ROUTE_LINE_COLOR) */
+/** Subset for legend (palette matches NTM_ROUTE_LINE_COLOR) */
 const NTM_ROUTE_LEGEND = [
-  { label: "Bus", color: "#bab1b1" },
-  { label: "Commuter / heavy rail", color: "#a11e06" },
-  { label: "Intercity rail", color: "#4a0a0a" },
-  { label: "Light rail / streetcar", color: "#cb3b09" },
+  { label: "Bus", color: "#a8a29e" },
+  { label: "Rail", color: "#ea580c" },
+  { label: "Subway, Metro", color: "#7f1d1d" },
+  { label: "Tram, Streetcar, Light rail", color: "#4ade80" },
   { label: "Ferry", color: "#0284c7" },
-  { label: "Other / trolley / tram", color: "#6b7280" },
+  { label: "Cable tram", color: "#15803d" },
+  { label: "Aerial lift / suspended cable car", color: "#38bdf8" },
+  { label: "Other modes", color: "#525252" },
+];
+
+/** NTD 2024 reporters — point fill by `RPT_MODULE`. */
+const NTD_RPT_MODULE_CIRCLE_COLOR = [
+  "match",
+  ["downcase", ["coalesce", ["get", "RPT_MODULE"], ""]],
+  "urban",
+  "#991b1b",
+  "rural",
+  "#22c55e",
+  "asset",
+  "#7c3aed",
+  "tribe",
+  "#9ca3af",
+  "#64748b",
+];
+
+const NTD_REPORTER_LEGEND = [
+  { label: "Urban", color: "#991b1b" },
+  { label: "Rural", color: "#22c55e" },
+  { label: "Asset", color: "#7c3aed" },
+  { label: "Tribe", color: "#9ca3af" },
 ];
 
 const POI_CONFIG = {
@@ -797,10 +817,29 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
         poiLayers.fta_admin_boundaries) && (
         <div className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto">
           {poiLayers.ntd_reporters_2024 ? (
-            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
-              <span className="text-[#c4a050] font-semibold">NTD 2024:</span>{" "}
-              Each dot is a reporting agency. Clusters summarize density when
-              zoomed out; zoom in to see individual agencies.
+            <div>
+              <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
+                Reporters (NTD 2024)
+              </div>
+              <div className="space-y-1 mb-2">
+                {NTD_REPORTER_LEGEND.map(({ label, color }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 text-[0.68rem] text-[rgba(240,236,227,0.82)]"
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0 border border-[rgba(240,236,227,0.25)]"
+                      style={{ background: color }}
+                    />
+                    {label}
+                  </div>
+                ))}
+              </div>
+              <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+                Each dot is a reporting agency (color = reporting module).
+                Clusters summarize density when zoomed out; zoom in for
+                individual agencies.
+              </div>
             </div>
           ) : null}
           {poiLayers.ntm_routes ? (
@@ -1285,7 +1324,7 @@ function RegionDetailPanel({ p, onClose }) {
 
 /*  Site password gate (API must set SITE_PASSWORD)  */
 
-function SitePasswordGate({ apiBase, onSuccess }) {
+function SitePasswordGate({ apiBase, onSuccess, sessionDays = 30 }) {
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1326,8 +1365,13 @@ function SitePasswordGate({ apiBase, onSuccess }) {
         <h1 className="text-xl font-bold tracking-[0.2em] text-[#f0ece3] text-center mb-1">
           <span className="text-[#c4a050]">SALT</span> ATLAS
         </h1>
-        <p className="text-center text-sm text-[rgba(240,236,227,0.55)] mb-8 tracking-wide">
+        <p className="text-center text-sm text-[rgba(240,236,227,0.55)] mb-2 tracking-wide">
           Enter the access password to continue
+        </p>
+        <p className="text-center text-xs text-[rgba(240,236,227,0.38)] mb-8 tracking-wide">
+          After login, this browser stays signed in for up to {sessionDays}{" "}
+          {sessionDays === 1 ? "day" : "days"} (until you sign out or the
+          session expires).
         </p>
         <form onSubmit={submit} className="space-y-4">
           <input
@@ -1436,6 +1480,7 @@ export default function App() {
   /** `checking` → ask API; `login` → show password form; `ready` → load map */
   const [siteAuthPhase, setSiteAuthPhase] = useState("checking");
   const [siteAuthRequired, setSiteAuthRequired] = useState(false);
+  const [siteSessionTtlDays, setSiteSessionTtlDays] = useState(30);
 
   // Keep refs in sync
   setHoverFeatureRef.current = setHoverFeature;
@@ -1453,12 +1498,16 @@ export default function App() {
     let cancelled = false;
     (async () => {
       try {
-        const base = getApiBase();
-        const r = await fetch(`${base}/api/auth-status`);
+        const r = await fetchAuthStatusWithRetry();
         const j = await r.json().catch(() => ({}));
         if (cancelled) return;
         const required = Boolean(j.authRequired);
         setSiteAuthRequired(required);
+        const ttl =
+          typeof j.sessionTtlDays === "number" && Number.isFinite(j.sessionTtlDays)
+            ? Math.max(1, Math.min(366, Math.round(j.sessionTtlDays)))
+            : 30;
+        setSiteSessionTtlDays(ttl);
         if (!required) {
           setSiteAuthPhase("ready");
           return;
@@ -1470,7 +1519,15 @@ export default function App() {
         setSiteAuthPhase("login");
         setLoading(false);
       } catch {
-        if (!cancelled) setSiteAuthPhase("ready");
+        if (cancelled) return;
+        /* Offline / API unreachable: still leave “checking” only if we have no token and want strict gate — prefer progress */
+        if (getSessionToken()) {
+          setSiteAuthRequired(true);
+          setSiteAuthPhase("ready");
+        } else {
+          setSiteAuthRequired(false);
+          setSiteAuthPhase("ready");
+        }
       }
     })();
     return () => {
@@ -2355,7 +2412,7 @@ export default function App() {
             filter: ["has", "point_count"],
             layout: { visibility: vis },
             paint: {
-              "circle-color": config.color,
+              "circle-color": isNtd ? "#7f1d1d" : config.color,
               "circle-radius": [
                 "step",
                 ["get", "point_count"],
@@ -2416,7 +2473,7 @@ export default function App() {
                     1,
                     14,
                   ],
-                  "circle-color": "#450a0a",
+                  "circle-color": NTD_RPT_MODULE_CIRCLE_COLOR,
                   "circle-opacity": [
                     "interpolate",
                     ["linear"],
@@ -2716,6 +2773,7 @@ export default function App() {
     return (
       <SitePasswordGate
         apiBase={getApiBase()}
+        sessionDays={siteSessionTtlDays}
         onSuccess={() => {
           setLoading(true);
           setSiteAuthPhase("ready");

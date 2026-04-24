@@ -86,3 +86,36 @@ export async function fetchRegionsWithRetry(maxAttempts = 4, delayMs = 1800) {
   }
   throw lastErr;
 }
+
+/**
+ * Auth bootstrap: same-origin `/api/auth-status` can hang on cold Render / flaky networks.
+ * Uses per-attempt timeout so the UI never stays on “Checking access…” indefinitely.
+ * @param {object} [opts]
+ * @param {number} [opts.maxAttempts=5]
+ * @param {number} [opts.delayMs=1000]
+ * @param {number} [opts.timeoutMs=12000]
+ */
+export async function fetchAuthStatusWithRetry(opts = {}) {
+  const maxAttempts = opts.maxAttempts ?? 5;
+  const delayMs = opts.delayMs ?? 1000;
+  const timeoutMs = opts.timeoutMs ?? 12000;
+  const base = getApiBase();
+  const url = `${base.replace(/\/$/, "")}/api/auth-status`;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+      if (attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+  }
+  throw lastErr;
+}

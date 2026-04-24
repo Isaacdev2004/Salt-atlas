@@ -277,10 +277,17 @@ function siteSessionSecret() {
     .digest("hex");
 }
 
+/** Browser “stay signed in” duration (days). Override with SITE_SESSION_DAYS. */
+function siteSessionTtlDays() {
+  const n = Number(process.env.SITE_SESSION_DAYS);
+  const days = Number.isFinite(n) ? n : 30;
+  return Math.min(366, Math.max(1, Math.round(days)));
+}
+
 function makeSiteSessionToken() {
   const secret = siteSessionSecret();
   if (!secret) return "";
-  const exp = Date.now() + 30 * 86400000;
+  const exp = Date.now() + siteSessionTtlDays() * 86400000;
   const payload = Buffer.from(JSON.stringify({ exp }), "utf8").toString(
     "base64url"
   );
@@ -319,7 +326,10 @@ function verifySiteSessionToken(token) {
 // ---------------------------------------------------------------------------
 
 app.get("/api/auth-status", (req, res) => {
-  res.json({ authRequired: siteAuthEnabled() });
+  res.json({
+    authRequired: siteAuthEnabled(),
+    sessionTtlDays: siteAuthEnabled() ? siteSessionTtlDays() : null,
+  });
 });
 
 app.post("/api/site-login", (req, res) => {
@@ -479,7 +489,7 @@ app.get("/api/ntd_reporters_2024", (req, res) =>
 app.get("/api/ntm_routes", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntm_routes, {
     maxFeatures: Number(process.env.ESRI_NTM_MAX ?? 7500),
-    extraQuery: "maxAllowableOffset=0.00025",
+    /* No maxAllowableOffset — Esri simplification was fragmenting lines */
   })
 );
 
