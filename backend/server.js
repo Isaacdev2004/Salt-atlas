@@ -480,6 +480,39 @@ async function serveEsriGeoJson(req, res, serviceUrl, opts = {}) {
   }
 }
 
+function parseNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function centroidFromRegionFeature(f) {
+  const p = f?.properties || {};
+  const lon = parseNum(p.INTPTLON);
+  const lat = parseNum(p.INTPTLAT);
+  if (lon != null && lat != null) return [lon, lat];
+  const geom = f?.geometry;
+  if (!geom?.coordinates) return null;
+  // Fallback centroid from polygon bbox.
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  const walk = (coords) => {
+    if (!Array.isArray(coords)) return;
+    if (typeof coords[0] === "number" && typeof coords[1] === "number") {
+      minX = Math.min(minX, coords[0]);
+      minY = Math.min(minY, coords[1]);
+      maxX = Math.max(maxX, coords[0]);
+      maxY = Math.max(maxY, coords[1]);
+      return;
+    }
+    coords.forEach(walk);
+  };
+  walk(geom.coordinates);
+  if (!Number.isFinite(minX)) return null;
+  return [(minX + maxX) / 2, (minY + maxY) / 2];
+}
+
 app.get("/api/ntd_reporters_2024", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntd_reporters_2024, {
     maxFeatures: Number(process.env.ESRI_NTD_MAX ?? 9000),
@@ -511,6 +544,114 @@ app.get("/api/fta_admin_boundaries", (req, res) =>
     extraQuery: "maxAllowableOffset=0.001",
   })
 );
+
+/** FCC telecom infrastructure (public ArcGIS layer, currently archived by source). */
+app.get("/api/telecom_infrastructure", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.fcc_cell_towers, {
+    maxFeatures: Number(process.env.ESRI_FCC_TOWERS_MAX ?? 120000),
+    outFields: "OBJECTID,Licensee,Callsign,LocCity,LocCounty,LocState,TowReg,StrucType,LicStatus,latdec,londec",
+    returnGeometry: true,
+    responseFormat: "json",
+    quantizeCoordinateDecimals: Number(process.env.ESRI_FCC_COORD_DECIMALS ?? 5),
+  })
+);
+
+/**
+ * FAF5 truck lanes (OD-style)
+ * Build top inter-zone links from FAF network border pairs, then draw straight
+ * lines between FAF region centroids. This prioritizes national performance.
+ */
+app.get("/api/faf5_truck_lanes", async (req, res) => {
+  const cacheKey = "faf5_truck_lanes_v1";
+  try {
+    const now = Date.now();
+    const cached = poiLayerCache.get(cacheKey);
+    if (cached && now - cached.ts < API_CACHE_TTL_MS) {
+      return res.json(cached.data);
+    }
+
+    const [regions, links] = await Promise.all([
+      fetchEsriGeoJson(SERVICES.faf5_regions, {
+        maxFeatures: Number(process.env.ESRI_FAF_REGIONS_MAX ?? 400),
+        outFields: "FAF_Zone,FAF_Zone_D,CFS17_NAME,INTPTLAT,INTPTLON",
+        returnGeometry: true,
+        extraQuery: "maxAllowableOffset=0.02",
+      }),
+      fetchEsriGeoJson(SERVICES.faf5_network_links, {
+        maxFeatures: Number(process.env.ESRI_FAF_LINKS_MAX ?? 220000),
+        outFields: "BorderFAF1,BorderFAF2",
+        returnGeometry: false,
+        where: "BorderFAF1 IS NOT NULL AND BorderFAF2 IS NOT NULL",
+      }),
+    ]);
+
+    const zoneCentroids = new Map();
+    (regions.features || []).forEach((f) => {
+      const zone = String(f?.properties?.FAF_Zone || "").trim();
+      if (!zone) return;
+      const center = centroidFromRegionFeature(f);
+      if (!center) return;
+      zoneCentroids.set(zone, {
+        center,
+        name:
+          f?.properties?.FAF_Zone_D ||
+          f?.properties?.CFS17_NAME ||
+          `FAF Zone ${zone}`,
+      });
+    });
+
+    const pairCounts = new Map();
+    (links.features || []).forEach((f) => {
+      const a = String(f?.properties?.BorderFAF1 || "").trim();
+      const b = String(f?.properties?.BorderFAF2 || "").trim();
+      if (!a || !b || a === b) return;
+      const key = `${a}|${b}`;
+      pairCounts.set(key, (pairCounts.get(key) || 0) + 1);
+    });
+
+    const topN = Math.max(200, Number(process.env.ESRI_FAF_OD_TOP_N ?? 1200));
+    const entries = [...pairCounts.entries()]
+      .map(([key, count]) => ({ key, count }))
+      .sort((x, y) => y.count - x.count)
+      .slice(0, topN);
+
+    const odFeatures = [];
+    entries.forEach(({ key, count }, i) => {
+      const [from, to] = key.split("|");
+      const a = zoneCentroids.get(from);
+      const b = zoneCentroids.get(to);
+      if (!a || !b) return;
+      odFeatures.push({
+        type: "Feature",
+        properties: {
+          id: i + 1,
+          origin_zone: from,
+          destination_zone: to,
+          origin_name: a.name,
+          destination_name: b.name,
+          link_count: count,
+          mode: "Truck (FAF5 OD proxy)",
+        },
+        geometry: {
+          type: "LineString",
+          coordinates: [a.center, b.center],
+        },
+      });
+    });
+
+    const data = {
+      type: "FeatureCollection",
+      features: odFeatures,
+    };
+    poiLayerCache.set(cacheKey, { data, ts: now });
+    return res.json(data);
+  } catch (err) {
+    console.error("[/api/faf5_truck_lanes] Error:", err.message);
+    return res
+      .status(500)
+      .json({ error: "Failed to load FAF5 truck lanes", detail: err.message });
+  }
+});
 
 /**
  * GET /api/:layer

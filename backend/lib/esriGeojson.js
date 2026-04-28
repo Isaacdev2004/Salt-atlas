@@ -31,6 +31,15 @@ const SERVICES = {
   /** Urbanized Areas (2020) — visible “administrative” footprint in the reference map */
   fta_admin_uza_2020:
     "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/FTA_Administrative_Boundaries/FeatureServer/1",
+  /** FAF5 Regions (centroids used for OD lane endpoints). */
+  faf5_regions:
+    "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_Freight_Analysis_Framework_Regions/FeatureServer/0",
+  /** FAF5 road network links (used to infer top inter-zone truck lane connections). */
+  faf5_network_links:
+    "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_Freight_Analysis_Framework_Network_Links/FeatureServer/0",
+  /** Public FCC-derived tower infrastructure (ArcGIS Living Atlas archive). */
+  fcc_cell_towers:
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Cellular_Towers_in_the_United_States_view/FeatureServer/0",
 };
 
 function cachePath(key) {
@@ -62,6 +71,45 @@ function stripForMapbox(fc) {
     type: "FeatureCollection",
     features: Array.isArray(fc.features) ? fc.features : [],
   };
+}
+
+function esriJsonGeometryToGeoJson(geometry, geometryType) {
+  if (!geometry) return null;
+  if (geometryType === "esriGeometryPoint") {
+    if (typeof geometry.x !== "number" || typeof geometry.y !== "number")
+      return null;
+    return { type: "Point", coordinates: [geometry.x, geometry.y] };
+  }
+  if (geometryType === "esriGeometryPolyline") {
+    const paths = Array.isArray(geometry.paths) ? geometry.paths : [];
+    if (!paths.length) return null;
+    return paths.length === 1
+      ? { type: "LineString", coordinates: paths[0] }
+      : { type: "MultiLineString", coordinates: paths };
+  }
+  if (geometryType === "esriGeometryPolygon") {
+    const rings = Array.isArray(geometry.rings) ? geometry.rings : [];
+    if (!rings.length) return null;
+    return { type: "Polygon", coordinates: rings };
+  }
+  return null;
+}
+
+function normalizeEsriResponseToGeoJson(payload) {
+  if (!payload || typeof payload !== "object") {
+    return { type: "FeatureCollection", features: [] };
+  }
+  if (payload.type === "FeatureCollection") return stripForMapbox(payload);
+  const geometryType = payload.geometryType;
+  const features = Array.isArray(payload.features)
+    ? payload.features.map((f, idx) => ({
+        type: "Feature",
+        id: f?.attributes?.OBJECTID ?? idx + 1,
+        properties: f?.attributes || {},
+        geometry: esriJsonGeometryToGeoJson(f?.geometry, geometryType),
+      }))
+    : [];
+  return stripForMapbox({ type: "FeatureCollection", features });
 }
 
 /** Round coordinates in-place to shrink JSON (helps Render / browser limits on NTM polylines). */
@@ -98,30 +146,23 @@ function quantizeGeoJsonFeatures(features, decimals) {
  * @param {number} [opts.maxFeatures]
  * @param {string} [opts.extraQuery] e.g. geometry simplification
  * @param {number} [opts.quantizeCoordinateDecimals] round line/polygon coords (e.g. 4 for NTM)
+ * @param {string} [opts.where]
+ * @param {string} [opts.outFields]
+ * @param {boolean} [opts.returnGeometry]
+ * @param {string} [opts.orderByFields]
+ * @param {"geojson"|"json"} [opts.responseFormat]
  */
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function fetchEsriPage(serviceUrl, offset, take, extraSuffix) {
-  const q = new URLSearchParams({
-    where: "1=1",
-    outFields: "*",
-    returnGeometry: "true",
-    outSR: "4326",
-    f: "geojson",
-    resultOffset: String(offset),
-    resultRecordCount: String(take),
-    /** Required for consistent resultOffset paging on hosted FeatureServer */
-    orderByFields: "OBJECTID",
-  });
-  const url = `${serviceUrl}/query?${q.toString()}${extraSuffix}`;
+async function fetchEsriPage(queryUrl) {
   let lastErr;
   for (let attempt = 1; attempt <= ESRI_PAGE_RETRIES; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ESRI_FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(url, {
+      const res = await fetch(queryUrl, {
         headers: { Accept: "application/json" },
         signal: ctrl.signal,
       });
@@ -145,11 +186,27 @@ async function fetchEsriPage(serviceUrl, offset, take, extraSuffix) {
 async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   const maxFeatures = opts.maxFeatures ?? 8000;
   const pageSize = Math.min(2000, maxFeatures);
+  const where = (opts.where || "1=1").trim();
+  const outFields = (opts.outFields || "*").trim();
+  const returnGeometry = opts.returnGeometry !== false;
+  const orderByFields = (opts.orderByFields || "OBJECTID").trim();
+  const responseFormat =
+    (opts.responseFormat || "geojson").toLowerCase() === "json"
+      ? "json"
+      : "geojson";
+  const queryBase = new URLSearchParams({
+    where,
+    outFields,
+    returnGeometry: returnGeometry ? "true" : "false",
+    outSR: "4326",
+    f: responseFormat,
+    orderByFields,
+  });
   const extraSuffix = opts.extraQuery ? `&${opts.extraQuery}` : "";
   const qDec = Number.isFinite(Number(opts.quantizeCoordinateDecimals))
     ? Math.min(8, Math.max(0, Math.round(Number(opts.quantizeCoordinateDecimals))))
     : null;
-  const cacheKey = `${serviceUrl}|${maxFeatures}|${extraSuffix}|p${ESRI_PARALLEL_PAGES}|q${qDec ?? "x"}`;
+  const cacheKey = `${serviceUrl}|${maxFeatures}|${queryBase.toString()}|${extraSuffix}|p${ESRI_PARALLEL_PAGES}|q${qDec ?? "x"}`;
   const cfile = cachePath(cacheKey);
   const cached = readCache(cfile, DEFAULT_TTL_MS);
   if (cached) return stripForMapbox(cached);
@@ -161,8 +218,14 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
     let offset = 0;
     while (offset < maxFeatures) {
       const take = Math.min(pageSize, maxFeatures - offset);
-      const gj = await fetchEsriPage(serviceUrl, offset, take, extraSuffix);
-      const batch = gj.features || [];
+      const q = new URLSearchParams(queryBase);
+      q.set("resultOffset", String(offset));
+      q.set("resultRecordCount", String(take));
+      const gj = await fetchEsriPage(
+        `${serviceUrl}/query?${q.toString()}${extraSuffix}`
+      );
+      const norm = normalizeEsriResponseToGeoJson(gj);
+      const batch = norm.features || [];
       if (!batch.length) break;
       features.push(...batch);
       offset += batch.length;
@@ -182,12 +245,18 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
       ) {
         const offset = p * pageSize;
         const take = Math.min(pageSize, maxFeatures - offset);
-        pagePromises.push(fetchEsriPage(serviceUrl, offset, take, extraSuffix));
+        const q = new URLSearchParams(queryBase);
+        q.set("resultOffset", String(offset));
+        q.set("resultRecordCount", String(take));
+        pagePromises.push(
+          fetchEsriPage(`${serviceUrl}/query?${q.toString()}${extraSuffix}`)
+        );
       }
       const jsonChunks = await Promise.all(pagePromises);
       let sawShortPage = false;
       for (const gj of jsonChunks) {
-        const batch = gj.features || [];
+        const norm = normalizeEsriResponseToGeoJson(gj);
+        const batch = norm.features || [];
         if (!batch.length) {
           sawShortPage = true;
           break;

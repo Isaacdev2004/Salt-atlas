@@ -109,6 +109,28 @@ const FTA_UZA_LEGEND = [
   { label: "Over 1 million", color: "rgb(75,126,152)" },
 ];
 
+/** FAF5 truck lanes (OD proxy) */
+const FAF_TRUCK_LINE_COLOR = [
+  "interpolate",
+  ["linear"],
+  ["coalesce", ["get", "link_count"], 0],
+  1,
+  "#60a5fa",
+  8,
+  "#3b82f6",
+  20,
+  "#2563eb",
+  40,
+  "#1d4ed8",
+];
+
+const FAF_TRUCK_LANE_LEGEND = [
+  { label: "Light connectivity", color: "#60a5fa" },
+  { label: "Moderate", color: "#3b82f6" },
+  { label: "High", color: "#2563eb" },
+  { label: "Top corridors", color: "#1d4ed8" },
+];
+
 const POI_CONFIG = {
   airports: {
     label: "Airports",
@@ -168,6 +190,34 @@ const POI_CONFIG = {
     fillColor: "rgb(205,224,202)",
     fillOpacity: 0.48,
     fillOutlineColor: "rgba(100,110,120,0.45)",
+  },
+  faf5_truck_lanes: {
+    label: "FAF5 Truck Lanes (OD)",
+    color: "#2563eb",
+    endpoint: "/api/faf5_truck_lanes",
+    kind: "line",
+    cluster: false,
+    lineColor: FAF_TRUCK_LINE_COLOR,
+    lineWidth: [
+      "interpolate",
+      ["linear"],
+      ["coalesce", ["get", "link_count"], 0],
+      1,
+      0.8,
+      5,
+      1.6,
+      20,
+      2.8,
+      40,
+      4,
+    ],
+  },
+  telecom_infrastructure: {
+    label: "Telecom Infrastructure (FCC Towers)",
+    color: "#06b6d4",
+    endpoint: "/api/telecom_infrastructure",
+    kind: "cluster",
+    cluster: true,
   },
 };
 
@@ -832,7 +882,9 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
       })}
       {(poiLayers.ntd_reporters_2024 ||
         poiLayers.ntm_routes ||
-        poiLayers.fta_admin_boundaries) && (
+        poiLayers.fta_admin_boundaries ||
+        poiLayers.faf5_truck_lanes ||
+        poiLayers.telecom_infrastructure) && (
         <div className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto">
           {poiLayers.ntd_reporters_2024 ? (
             <div>
@@ -909,6 +961,40 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
                 <b className="text-[rgba(240,236,227,0.85)]">View layer → None</b>{" "}
                 and zoom in for the clearest view.
               </div>
+            </div>
+          ) : null}
+          {poiLayers.faf5_truck_lanes ? (
+            <div>
+              <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
+                FAF5 truck lanes (OD)
+              </div>
+              <div className="space-y-1 mb-2">
+                {FAF_TRUCK_LANE_LEGEND.map(({ label, color }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 text-[0.68rem] text-[rgba(240,236,227,0.82)]"
+                  >
+                    <span
+                      className="w-7 h-1.5 rounded-sm shrink-0"
+                      style={{ background: color }}
+                    />
+                    {label}
+                  </div>
+                ))}
+              </div>
+              <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+                Nationwide FAF5 inter-zone lane connectivity (truck-focused OD
+                proxy), optimized for fast map rendering.
+              </div>
+            </div>
+          ) : null}
+          {poiLayers.telecom_infrastructure ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">
+                Telecom infrastructure:
+              </span>{" "}
+              FCC-derived cellular tower sites (archived source snapshot).
+              Clusters summarize dense markets; zoom in for individual towers.
             </div>
           ) : null}
         </div>
@@ -2297,7 +2383,13 @@ export default function App() {
         await new Promise((resolve) => map.once("load", resolve));
 
       const slow = keysToLoad.some((k) =>
-        ["ntd_reporters_2024", "ntm_routes", "fta_admin_boundaries"].includes(k)
+        [
+          "ntd_reporters_2024",
+          "ntm_routes",
+          "fta_admin_boundaries",
+          "faf5_truck_lanes",
+          "telecom_infrastructure",
+        ].includes(k)
       );
       if (slow) {
         showToast(
@@ -2312,7 +2404,9 @@ export default function App() {
           const heavy =
             key === "ntm_routes" ||
             key === "ntd_reporters_2024" ||
-            key === "fta_admin_boundaries";
+            key === "fta_admin_boundaries" ||
+            key === "faf5_truck_lanes" ||
+            key === "telecom_infrastructure";
           return apiFetchWithRetry(
             cfg.endpoint,
             {},
@@ -2389,18 +2483,19 @@ export default function App() {
                 "line-join": "round",
               },
               paint: {
-                "line-color": NTM_ROUTE_LINE_COLOR,
-                "line-width": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  4,
-                  1.2,
-                  8,
-                  2.5,
-                  12,
-                  4,
-                ],
+                "line-color": config.lineColor ?? NTM_ROUTE_LINE_COLOR,
+                "line-width":
+                  config.lineWidth ?? [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    4,
+                    1.2,
+                    8,
+                    2.5,
+                    12,
+                    4,
+                  ],
                 "line-opacity": 0.9,
               },
             });
@@ -2416,18 +2511,21 @@ export default function App() {
               if (!f) return;
               const Mbx = mapboxglRef.current;
               if (!Mbx) return;
-              const name =
-                f.properties?.route_short_name ||
-                f.properties?.route_long_name ||
-                f.properties?.route_desc ||
-                "Route";
-              const sub = [
-                f.properties?.route_type_text,
-                f.properties?.route_desc,
-              ]
-                .filter(Boolean)
-                .slice(0, 2)
-                .join(" · ");
+              const isFaf = key === "faf5_truck_lanes";
+              const name = isFaf
+                ? `${f.properties?.origin_name ?? "Origin"} → ${
+                    f.properties?.destination_name ?? "Destination"
+                  }`
+                : f.properties?.route_short_name ||
+                  f.properties?.route_long_name ||
+                  f.properties?.route_desc ||
+                  "Route";
+              const sub = isFaf
+                ? `Connectivity score: ${fmtNumFull(f.properties?.link_count ?? 0)}`
+                : [f.properties?.route_type_text, f.properties?.route_desc]
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .join(" · ");
               new Mbx.Popup({ closeButton: true, maxWidth: "260px" })
                 .setLngLat(e.lngLat)
                 .setHTML(
@@ -2598,12 +2696,24 @@ export default function App() {
             const title =
               key === "ntd_reporters_2024"
                 ? f.properties.AGENCY_NM || f.properties.name
+                : key === "telecom_infrastructure"
+                  ? f.properties.Licensee ||
+                    f.properties.Callsign ||
+                    f.properties.name ||
+                    "Telecom Tower"
                 : f.properties.name || config.label;
             const sub =
               key === "ntd_reporters_2024"
                 ? [f.properties.RPT_TYPE, f.properties.UZA_NM]
                     .filter(Boolean)
                     .join(" · ") || config.label
+                : key === "telecom_infrastructure"
+                  ? [
+                      f.properties.LocCity,
+                      f.properties.LocState,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || config.label
                 : config.label;
             new Mbx.Popup({ closeButton: true, maxWidth: "260px" })
               .setLngLat(e.lngLat)
