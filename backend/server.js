@@ -609,19 +609,22 @@ app.get("/api/faf5_truck_lanes", async (req, res) => {
       pairCounts.set(key, (pairCounts.get(key) || 0) + 1);
     });
 
-    const topN = Math.max(200, Number(process.env.ESRI_FAF_OD_TOP_N ?? 1200));
+    const topN = Math.max(500, Number(process.env.ESRI_FAF_OD_TOP_N ?? 6000));
     const entries = [...pairCounts.entries()]
       .map(([key, count]) => ({ key, count }))
       .sort((x, y) => y.count - x.count)
       .slice(0, topN);
 
     const odFeatures = [];
+    const minCount = Math.max(1, Number(process.env.ESRI_FAF_OD_MIN_COUNT ?? 2));
     entries.forEach(({ key, count }, i) => {
+      if (count < minCount) return;
       const [from, to] = key.split("|");
       const a = zoneCentroids.get(from);
       const b = zoneCentroids.get(to);
       if (!a || !b) return;
       odFeatures.push({
+        id: i + 1,
         type: "Feature",
         properties: {
           id: i + 1,

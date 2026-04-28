@@ -115,7 +115,7 @@ const FAF_TRUCK_LINE_COLOR = [
   ["linear"],
   ["coalesce", ["get", "link_count"], 0],
   1,
-  "#60a5fa",
+  "#93c5fd",
   8,
   "#3b82f6",
   20,
@@ -198,6 +198,7 @@ const POI_CONFIG = {
     kind: "line",
     cluster: false,
     lineColor: FAF_TRUCK_LINE_COLOR,
+    lineMetrics: false,
     lineWidth: [
       "interpolate",
       ["linear"],
@@ -813,6 +814,10 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
   return (
     <div
       className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[200px] max-w-[min(100vw-24px,320px)] animate-fade-slide"
+      onWheelCapture={(e) => {
+        // Prevent the map from consuming the wheel so the legend can scroll.
+        e.stopPropagation();
+      }}
       style={{
         background: "rgba(10,26,47,0.92)",
         backdropFilter: "blur(12px)",
@@ -885,7 +890,10 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
         poiLayers.fta_admin_boundaries ||
         poiLayers.faf5_truck_lanes ||
         poiLayers.telecom_infrastructure) && (
-        <div className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto">
+        <div
+          className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto overscroll-contain"
+          onWheelCapture={(e) => e.stopPropagation()}
+        >
           {poiLayers.ntd_reporters_2024 ? (
             <div>
               <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
@@ -2470,7 +2478,13 @@ export default function App() {
 
         if (kind === "line") {
           if (!map.getSource(key)) {
-            map.addSource(key, { type: "geojson", data });
+            map.addSource(key, {
+              type: "geojson",
+              data,
+              // Ensures interactive highlighting even if upstream doesn't set Feature.id.
+              generateId: true,
+              ...(POI_CONFIG[key]?.lineMetrics ? { lineMetrics: true } : {}),
+            });
           }
           if (!map.getLayer(`${key}-line`)) {
             map.addLayer({
@@ -2483,20 +2497,46 @@ export default function App() {
                 "line-join": "round",
               },
               paint: {
-                "line-color": config.lineColor ?? NTM_ROUTE_LINE_COLOR,
-                "line-width":
-                  config.lineWidth ?? [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    4,
-                    1.2,
-                    8,
-                    2.5,
-                    12,
-                    4,
-                  ],
-                "line-opacity": 0.9,
+                "line-color":
+                  key === "faf5_truck_lanes"
+                    ? [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        "#fbbf24",
+                        config.lineColor ?? NTM_ROUTE_LINE_COLOR,
+                      ]
+                    : config.lineColor ?? NTM_ROUTE_LINE_COLOR,
+                "line-width": (() => {
+                  const base =
+                    config.lineWidth ?? [
+                      "interpolate",
+                      ["linear"],
+                      ["zoom"],
+                      4,
+                      1.2,
+                      8,
+                      2.5,
+                      12,
+                      4,
+                    ];
+                  if (key !== "faf5_truck_lanes") return base;
+                  return [
+                    "case",
+                    ["boolean", ["feature-state", "hover"], false],
+                    ["+", base, 2],
+                    base,
+                  ];
+                })(),
+                "line-opacity":
+                  key === "faf5_truck_lanes"
+                    ? [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        0.95,
+                        0.55,
+                      ]
+                    : 0.9,
+                ...(key === "faf5_truck_lanes" ? { "line-blur": 0.4 } : {}),
               },
             });
             map.on("mouseenter", `${key}-line`, () => {
@@ -2505,6 +2545,46 @@ export default function App() {
             map.on("mouseleave", `${key}-line`, () => {
               map.getCanvas().style.cursor = "";
             });
+            if (key === "faf5_truck_lanes") {
+              let hoverId = null;
+              map.on("mousemove", `${key}-line`, (e) => {
+                const f = e.features?.[0];
+                const nextId = f?.id;
+                if (nextId == null) return;
+                if (hoverId === nextId) return;
+                if (hoverId != null) {
+                  try {
+                    map.setFeatureState(
+                      { source: key, id: hoverId },
+                      { hover: false }
+                    );
+                  } catch {
+                    /* ignore */
+                  }
+                }
+                hoverId = nextId;
+                try {
+                  map.setFeatureState(
+                    { source: key, id: hoverId },
+                    { hover: true }
+                  );
+                } catch {
+                  /* ignore */
+                }
+              });
+              map.on("mouseleave", `${key}-line`, () => {
+                if (hoverId == null) return;
+                try {
+                  map.setFeatureState(
+                    { source: key, id: hoverId },
+                    { hover: false }
+                  );
+                } catch {
+                  /* ignore */
+                }
+                hoverId = null;
+              });
+            }
             map.on("click", `${key}-line`, (e) => {
               e.preventDefault();
               const f = e.features?.[0];
