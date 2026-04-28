@@ -115,20 +115,20 @@ const FAF_TRUCK_LINE_COLOR = [
   ["linear"],
   ["coalesce", ["get", "link_count"], 0],
   1,
-  "#93c5fd",
+  "#a5f3fc",
   8,
-  "#3b82f6",
+  "#67e8f9",
   20,
-  "#2563eb",
+  "#22d3ee",
   40,
-  "#1d4ed8",
+  "#0891b2",
 ];
 
 const FAF_TRUCK_LANE_LEGEND = [
-  { label: "Light connectivity", color: "#60a5fa" },
-  { label: "Moderate", color: "#3b82f6" },
-  { label: "High", color: "#2563eb" },
-  { label: "Top corridors", color: "#1d4ed8" },
+  { label: "Light connectivity", color: "#a5f3fc" },
+  { label: "Moderate", color: "#67e8f9" },
+  { label: "High", color: "#22d3ee" },
+  { label: "Top corridors", color: "#0891b2" },
 ];
 
 const POI_CONFIG = {
@@ -810,7 +810,12 @@ function FilterSlider({
 
 /*  InfraLegend  */
 
-function InfraLegend({ poiLayers, onToggle, disabled = false }) {
+function InfraLegend({
+  poiLayers,
+  onToggle,
+  disabled = false,
+  onScrollLockChange,
+}) {
   return (
     <div
       className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[200px] max-w-[min(100vw-24px,320px)] animate-fade-slide"
@@ -818,6 +823,8 @@ function InfraLegend({ poiLayers, onToggle, disabled = false }) {
         // Prevent the map from consuming the wheel so the legend can scroll.
         e.stopPropagation();
       }}
+      onMouseEnter={() => onScrollLockChange?.(true)}
+      onMouseLeave={() => onScrollLockChange?.(false)}
       style={{
         background: "rgba(10,26,47,0.92)",
         backdropFilter: "blur(12px)",
@@ -2902,6 +2909,17 @@ export default function App() {
     showToast(next ? "Infrastructure shown" : "Infrastructure hidden", 1600);
   };
 
+  const setMapWheelLocked = useCallback((locked) => {
+    const map = mapRef.current;
+    if (!map) return;
+    try {
+      if (locked) map.scrollZoom.disable();
+      else map.scrollZoom.enable();
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   /*  Top regions  */
 
   const handleTopRegions = () => {
@@ -3363,6 +3381,7 @@ export default function App() {
                 poiLayers={poiLayers}
                 onToggle={handlePoiToggle}
                 disabled={mapOverlaysHidden}
+                onScrollLockChange={setMapWheelLocked}
               />
             )}
 
