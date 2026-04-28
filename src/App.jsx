@@ -113,14 +113,14 @@ const FTA_UZA_LEGEND = [
 const FAF_TRUCK_LINE_COLOR = [
   "interpolate",
   ["linear"],
-  ["coalesce", ["get", "link_count"], 0],
-  1,
-  "#a5f3fc",
-  8,
-  "#67e8f9",
-  20,
-  "#22d3ee",
+  ["coalesce", ["get", "tons_2024_ktons"], 0],
   40,
+  "#a5f3fc",
+  500,
+  "#67e8f9",
+  2500,
+  "#22d3ee",
+  10000,
   "#0891b2",
 ];
 
@@ -202,14 +202,14 @@ const POI_CONFIG = {
     lineWidth: [
       "interpolate",
       ["linear"],
-      ["coalesce", ["get", "link_count"], 0],
-      1,
-      0.8,
-      5,
-      1.6,
-      20,
-      2.8,
+      ["coalesce", ["get", "tons_2024_ktons"], 0],
       40,
+      0.8,
+      500,
+      1.6,
+      2500,
+      2.8,
+      10000,
       4,
     ],
   },
@@ -998,8 +998,9 @@ function InfraLegend({
                 ))}
               </div>
               <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
-                Nationwide FAF5 inter-zone lane connectivity (truck-focused OD
-                proxy), optimized for fast map rendering.
+                Nationwide FAF5 truck OD flows (2024), built from official
+                FAF OD tables and rendered as top origin-destination lanes.
+                Values shown on hover/click.
               </div>
             </div>
           ) : null}
@@ -2608,7 +2609,9 @@ export default function App() {
                   f.properties?.route_desc ||
                   "Route";
               const sub = isFaf
-                ? `Connectivity score: ${fmtNumFull(f.properties?.link_count ?? 0)}`
+                ? `Truck flow (2024, ktons): ${fmtNumFull(
+                    f.properties?.tons_2024_ktons ?? 0
+                  )}`
                 : [f.properties?.route_type_text, f.properties?.route_desc]
                     .filter(Boolean)
                     .slice(0, 2)
