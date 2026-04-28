@@ -113,20 +113,20 @@ const FTA_UZA_LEGEND = [
 const FAF_TRUCK_LINE_COLOR = [
   "step",
   ["coalesce", ["get", "tons_2024_ktons"], 0],
-  "#93c5fd",
+  "#f97316",
   250,
-  "#60a5fa",
+  "#b91c1c",
   1200,
-  "#3b82f6",
+  "#4ade80",
   5000,
-  "#1d4ed8",
+  "#0ea5e9",
 ];
 
 const FAF_TRUCK_LANE_LEGEND = [
-  { label: "0–250 ktons", color: "#93c5fd" },
-  { label: "250–1,200 ktons", color: "#60a5fa" },
-  { label: "1,200–5,000 ktons", color: "#3b82f6" },
-  { label: "5,000+ ktons", color: "#1d4ed8" },
+  { label: "Light connectivity", color: "#f97316" },
+  { label: "Moderate", color: "#b91c1c" },
+  { label: "High", color: "#4ade80" },
+  { label: "Top corridors", color: "#0ea5e9" },
 ];
 
 const POI_CONFIG = {
