@@ -111,24 +111,22 @@ const FTA_UZA_LEGEND = [
 
 /** FAF5 truck lanes (OD proxy) */
 const FAF_TRUCK_LINE_COLOR = [
-  "interpolate",
-  ["linear"],
+  "step",
   ["coalesce", ["get", "tons_2024_ktons"], 0],
-  40,
-  "#a5f3fc",
-  500,
-  "#67e8f9",
-  2500,
-  "#22d3ee",
-  10000,
-  "#0891b2",
+  "#93c5fd",
+  250,
+  "#60a5fa",
+  1200,
+  "#3b82f6",
+  5000,
+  "#1d4ed8",
 ];
 
 const FAF_TRUCK_LANE_LEGEND = [
-  { label: "Light connectivity", color: "#a5f3fc" },
-  { label: "Moderate", color: "#67e8f9" },
-  { label: "High", color: "#22d3ee" },
-  { label: "Top corridors", color: "#0891b2" },
+  { label: "0–250 ktons", color: "#93c5fd" },
+  { label: "250–1,200 ktons", color: "#60a5fa" },
+  { label: "1,200–5,000 ktons", color: "#3b82f6" },
+  { label: "5,000+ ktons", color: "#1d4ed8" },
 ];
 
 const POI_CONFIG = {
@@ -815,12 +813,17 @@ function InfraLegend({
   onToggle,
   disabled = false,
   onScrollLockChange,
+  fafLaneFilters,
+  fafLaneOptions,
+  onFafLaneFilterChange,
+  onResetFafLaneFilters,
 }) {
   return (
     <div
-      className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[200px] max-w-[min(100vw-24px,320px)] animate-fade-slide"
+      className="absolute top-3 right-3 z-[5] rounded-lg shadow-xl p-3 min-w-[200px] max-w-[min(100vw-24px,340px)] max-h-[78vh] overflow-y-auto overscroll-contain animate-fade-slide"
       onWheelCapture={(e) => {
         // Prevent the map from consuming the wheel so the legend can scroll.
+        e.preventDefault();
         e.stopPropagation();
       }}
       onMouseEnter={() => onScrollLockChange?.(true)}
@@ -898,8 +901,11 @@ function InfraLegend({
         poiLayers.faf5_truck_lanes ||
         poiLayers.telecom_infrastructure) && (
         <div
-          className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left max-h-[40vh] overflow-y-auto overscroll-contain"
-          onWheelCapture={(e) => e.stopPropagation()}
+          className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left"
+          onWheelCapture={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           {poiLayers.ntd_reporters_2024 ? (
             <div>
@@ -982,6 +988,53 @@ function InfraLegend({
             <div>
               <div className="text-[0.62rem] uppercase tracking-[0.14em] text-[rgba(196,160,80,0.8)] mb-1.5 font-bold">
                 FAF5 truck lanes (OD)
+              </div>
+              <div className="grid grid-cols-1 gap-1.5 mb-2">
+                <label className="text-[0.62rem] text-[rgba(240,236,227,0.72)]">
+                  Origin region
+                </label>
+                <select
+                  value={fafLaneFilters?.origin ?? "all"}
+                  onChange={(e) =>
+                    onFafLaneFilterChange?.("origin", e.target.value)
+                  }
+                  className="w-full text-[0.68rem] px-2 py-1 rounded bg-[rgba(13,31,53,0.75)] text-[#f0ece3] border border-[rgba(196,160,80,0.28)]"
+                >
+                  <option value="all">All origins</option>
+                  {(fafLaneOptions?.origins ?? []).map((x) => (
+                    <option key={x} value={x}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+
+                <label className="text-[0.62rem] text-[rgba(240,236,227,0.72)] mt-1">
+                  Destination region
+                </label>
+                <select
+                  value={fafLaneFilters?.destination ?? "all"}
+                  onChange={(e) =>
+                    onFafLaneFilterChange?.("destination", e.target.value)
+                  }
+                  className="w-full text-[0.68rem] px-2 py-1 rounded bg-[rgba(13,31,53,0.75)] text-[#f0ece3] border border-[rgba(196,160,80,0.28)]"
+                >
+                  <option value="all">All destinations</option>
+                  {(fafLaneOptions?.destinations ?? []).map((x) => (
+                    <option key={x} value={x}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+                {(fafLaneFilters?.origin !== "all" ||
+                  fafLaneFilters?.destination !== "all") && (
+                  <button
+                    type="button"
+                    onClick={onResetFafLaneFilters}
+                    className="mt-1 text-[0.62rem] px-2 py-1 rounded border border-[rgba(196,160,80,0.35)] text-[#c4a050] hover:bg-[rgba(196,160,80,0.12)]"
+                  >
+                    Reset lane filters
+                  </button>
+                )}
               </div>
               <div className="space-y-1 mb-2">
                 {FAF_TRUCK_LANE_LEGEND.map(({ label, color }) => (
@@ -1624,6 +1677,14 @@ export default function App() {
   const [siteAuthPhase, setSiteAuthPhase] = useState("checking");
   const [siteAuthRequired, setSiteAuthRequired] = useState(false);
   const [siteSessionTtlDays, setSiteSessionTtlDays] = useState(30);
+  const [fafLaneOptions, setFafLaneOptions] = useState({
+    origins: [],
+    destinations: [],
+  });
+  const [fafLaneFilters, setFafLaneFilters] = useState({
+    origin: "all",
+    destination: "all",
+  });
 
   // Keep refs in sync
   setHoverFeatureRef.current = setHoverFeature;
@@ -2223,6 +2284,8 @@ export default function App() {
       if (kind === "line") {
         if (map.getLayer(`${key}-line`))
           map.setLayoutProperty(`${key}-line`, "visibility", vis);
+        if (map.getLayer(`${key}-line-hit`))
+          map.setLayoutProperty(`${key}-line-hit`, "visibility", vis);
         return;
       }
       if (kind === "fill") {
@@ -2449,6 +2512,23 @@ export default function App() {
         const vis = poiLayersRef.current[key] ? "visible" : "none";
         const kind = config.kind ?? "cluster";
 
+        if (key === "faf5_truck_lanes" && Array.isArray(data?.features)) {
+          const originSet = new Set();
+          const destinationSet = new Set();
+          data.features.forEach((f) => {
+            const o = String(f?.properties?.origin_name ?? "").trim();
+            const d = String(f?.properties?.destination_name ?? "").trim();
+            if (o) originSet.add(o);
+            if (d) destinationSet.add(d);
+          });
+          setFafLaneOptions({
+            origins: [...originSet].sort((a, b) => a.localeCompare(b)),
+            destinations: [...destinationSet].sort((a, b) =>
+              a.localeCompare(b)
+            ),
+          });
+        }
+
         if (kind === "fill") {
           const beforeId = map.getLayer("counties-fill")
             ? "counties-fill"
@@ -2540,13 +2620,30 @@ export default function App() {
                     ? [
                         "case",
                         ["boolean", ["feature-state", "hover"], false],
-                        0.95,
-                        0.55,
+                        0.96,
+                        0.42,
                       ]
                     : 0.9,
                 ...(key === "faf5_truck_lanes" ? { "line-blur": 0.4 } : {}),
               },
             });
+            if (key === "faf5_truck_lanes" && !map.getLayer(`${key}-line-hit`)) {
+              map.addLayer({
+                id: `${key}-line-hit`,
+                type: "line",
+                source: key,
+                layout: {
+                  visibility: vis,
+                  "line-cap": "round",
+                  "line-join": "round",
+                },
+                paint: {
+                  "line-color": "rgba(0,0,0,0)",
+                  "line-width": 14,
+                  "line-opacity": 0.01,
+                },
+              });
+            }
             map.on("mouseenter", `${key}-line`, () => {
               map.getCanvas().style.cursor = "pointer";
             });
@@ -2555,7 +2652,13 @@ export default function App() {
             });
             if (key === "faf5_truck_lanes") {
               let hoverId = null;
-              map.on("mousemove", `${key}-line`, (e) => {
+              map.on("mouseenter", `${key}-line-hit`, () => {
+                map.getCanvas().style.cursor = "pointer";
+              });
+              map.on("mouseleave", `${key}-line-hit`, () => {
+                map.getCanvas().style.cursor = "";
+              });
+              map.on("mousemove", `${key}-line-hit`, (e) => {
                 const f = e.features?.[0];
                 const nextId = f?.id;
                 if (nextId == null) return;
@@ -2580,7 +2683,7 @@ export default function App() {
                   /* ignore */
                 }
               });
-              map.on("mouseleave", `${key}-line`, () => {
+              map.on("mouseleave", `${key}-line-hit`, () => {
                 if (hoverId == null) return;
                 try {
                   map.setFeatureState(
@@ -2593,7 +2696,7 @@ export default function App() {
                 hoverId = null;
               });
             }
-            map.on("click", `${key}-line`, (e) => {
+            map.on("click", key === "faf5_truck_lanes" ? `${key}-line-hit` : `${key}-line`, (e) => {
               e.preventDefault();
               const f = e.features?.[0];
               if (!f) return;
@@ -2633,6 +2736,9 @@ export default function App() {
           }
           try {
             map.moveLayer(`${key}-line`);
+            if (key === "faf5_truck_lanes" && map.getLayer(`${key}-line-hit`)) {
+              map.moveLayer(`${key}-line-hit`);
+            }
           } catch {
             /* ignore */
           }
@@ -2837,6 +2943,7 @@ export default function App() {
           failedPoi.push(key);
           for (const lid of [
             `${key}-line`,
+            `${key}-line-hit`,
             `${key}-fill`,
             `${key}-clusters`,
             `${key}-cluster-count`,
@@ -2922,6 +3029,38 @@ export default function App() {
       /* ignore */
     }
   }, []);
+
+  const handleFafLaneFilterChange = useCallback((field, value) => {
+    setFafLaneFilters((prev) => ({ ...prev, [field]: value || "all" }));
+  }, []);
+
+  const resetFafLaneFilters = useCallback(() => {
+    setFafLaneFilters({ origin: "all", destination: "all" });
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.getLayer("faf5_truck_lanes-line")) return;
+    const parts = ["all"];
+    if (fafLaneFilters.origin !== "all") {
+      parts.push([
+        "==",
+        ["coalesce", ["get", "origin_name"], ""],
+        fafLaneFilters.origin,
+      ]);
+    }
+    if (fafLaneFilters.destination !== "all") {
+      parts.push([
+        "==",
+        ["coalesce", ["get", "destination_name"], ""],
+        fafLaneFilters.destination,
+      ]);
+    }
+    map.setFilter("faf5_truck_lanes-line", parts);
+    if (map.getLayer("faf5_truck_lanes-line-hit")) {
+      map.setFilter("faf5_truck_lanes-line-hit", parts);
+    }
+  }, [fafLaneFilters, poiLayers.faf5_truck_lanes]);
 
   /*  Top regions  */
 
@@ -3385,6 +3524,10 @@ export default function App() {
                 onToggle={handlePoiToggle}
                 disabled={mapOverlaysHidden}
                 onScrollLockChange={setMapWheelLocked}
+                fafLaneFilters={fafLaneFilters}
+                fafLaneOptions={fafLaneOptions}
+                onFafLaneFilterChange={handleFafLaneFilterChange}
+                onResetFafLaneFilters={resetFafLaneFilters}
               />
             )}
 
