@@ -197,17 +197,16 @@ const POI_CONFIG = {
     cluster: false,
     lineColor: FAF_TRUCK_LINE_COLOR,
     lineMetrics: false,
+    // Uniform width by zoom; volume is in popups / color category only.
     lineWidth: [
       "interpolate",
       ["linear"],
-      ["coalesce", ["get", "tons_2024_ktons"], 0],
-      40,
-      0.8,
-      500,
-      1.6,
-      2500,
-      2.8,
-      10000,
+      ["zoom"],
+      4,
+      1.2,
+      8,
+      2.5,
+      12,
       4,
     ],
   },
@@ -3579,8 +3578,10 @@ export default function App() {
           </div>
           {/* end right-side overlay wrapper */}
 
-          {/* Legend bar */}
-          {!loading && !mapOverlaysHidden && (
+          {/* Legend bar (choropleth scale — hidden when no thematic layer is active) */}
+          {!loading &&
+            !mapOverlaysHidden &&
+            activeLayer !== "none" && (
             <div className="absolute bottom-14 sm:bottom-3 left-1/2 -translate-x-1/2 z-[5] flex items-center gap-2 sm:gap-2.5 bg-white/92 rounded px-3 sm:px-4 py-1.5 sm:py-2 shadow-md text-[0.68rem] sm:text-[0.72rem] tracking-[0.1em] uppercase text-gray-600 whitespace-nowrap">
               <span>{layerLabel[activeLayer].toUpperCase()}</span>
               <span className="text-gray-400">Low</span>
