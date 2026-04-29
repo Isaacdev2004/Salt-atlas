@@ -3039,7 +3039,8 @@ export default function App() {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.getLayer("faf5_truck_lanes-line")) return;
+    if (!map || !poiLayers.faf5_truck_lanes) return;
+    if (!map.isStyleLoaded()) return;
     const parts = ["all"];
     if (fafLaneFilters.origin !== "all") {
       parts.push([
@@ -3055,9 +3056,15 @@ export default function App() {
         fafLaneFilters.destination,
       ]);
     }
-    map.setFilter("faf5_truck_lanes-line", parts);
-    if (map.getLayer("faf5_truck_lanes-line-hit")) {
-      map.setFilter("faf5_truck_lanes-line-hit", parts);
+    try {
+      if (map.getLayer("faf5_truck_lanes-line")) {
+        map.setFilter("faf5_truck_lanes-line", parts);
+      }
+      if (map.getLayer("faf5_truck_lanes-line-hit")) {
+        map.setFilter("faf5_truck_lanes-line-hit", parts);
+      }
+    } catch {
+      // Layer can be temporarily absent while style/layers are rebuilding.
     }
   }, [fafLaneFilters, poiLayers.faf5_truck_lanes]);
 
