@@ -2707,13 +2707,9 @@ export default function App() {
                       12,
                       4,
                     ];
-                  if (key !== "faf5_truck_lanes") return base;
-                  return [
-                    "case",
-                    ["boolean", ["feature-state", "hover"], false],
-                    ["+", base, 2],
-                    base,
-                  ];
+                  // Keep width zoom-driven for FAF lanes as well.
+                  // Mapbox disallows nesting a zoom expression inside arithmetic/case.
+                  return base;
                 })(),
                 "line-opacity":
                   key === "faf5_truck_lanes"
