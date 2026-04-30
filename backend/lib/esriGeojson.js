@@ -40,6 +40,9 @@ const SERVICES = {
   /** Public FCC-derived tower infrastructure (ArcGIS Living Atlas archive). */
   fcc_cell_towers:
     "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Cellular_Towers_in_the_United_States_view/FeatureServer/0",
+  /** NCES EDGE — Public school point locations (2022–23 CCD), MapServer layer 0 */
+  nces_public_schools_2223:
+    "https://nces.ed.gov/opengis/rest/services/K12_School_Locations/EDGE_GEOCODE_PUBLICSCH_2223/MapServer/0",
 };
 
 function cachePath(key) {
@@ -189,7 +192,10 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
   const where = (opts.where || "1=1").trim();
   const outFields = (opts.outFields || "*").trim();
   const returnGeometry = opts.returnGeometry !== false;
-  const orderByFields = (opts.orderByFields || "OBJECTID").trim();
+  const orderByFields =
+    opts.orderByFields === undefined
+      ? "OBJECTID"
+      : String(opts.orderByFields ?? "").trim();
   const responseFormat =
     (opts.responseFormat || "geojson").toLowerCase() === "json"
       ? "json"
@@ -200,8 +206,8 @@ async function fetchEsriGeoJson(serviceUrl, opts = {}) {
     returnGeometry: returnGeometry ? "true" : "false",
     outSR: "4326",
     f: responseFormat,
-    orderByFields,
   });
+  if (orderByFields) queryBase.set("orderByFields", orderByFields);
   const extraSuffix = opts.extraQuery ? `&${opts.extraQuery}` : "";
   const qDec = Number.isFinite(Number(opts.quantizeCoordinateDecimals))
     ? Math.min(8, Math.max(0, Math.round(Number(opts.quantizeCoordinateDecimals))))

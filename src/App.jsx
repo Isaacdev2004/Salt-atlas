@@ -217,7 +217,56 @@ const POI_CONFIG = {
     kind: "cluster",
     cluster: true,
   },
+  public_schools_2223: {
+    label: "Public Schools (NCES 2022–23)",
+    color: "#8b5cf6",
+    endpoint: "/api/public_schools_2223",
+    kind: "cluster",
+    cluster: true,
+  },
 };
+
+function teardownPoiInfrastructureLayers(map, key) {
+  if (!map) return;
+  const lids = [
+    `${key}-line`,
+    `${key}-line-hit`,
+    `${key}-fill`,
+    `${key}-clusters`,
+    `${key}-cluster-count`,
+    `${key}-points`,
+  ];
+  for (const lid of lids) {
+    if (map.getLayer(lid)) {
+      try {
+        map.removeLayer(lid);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  if (map.getSource(key)) {
+    try {
+      map.removeSource(key);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function poiInfrastructureLayersPresent(map, key) {
+  const cfg = POI_CONFIG[key];
+  if (!cfg) return false;
+  const kind = cfg.kind ?? "cluster";
+  if (kind === "line") return Boolean(map.getLayer(`${key}-line`));
+  if (kind === "fill") return Boolean(map.getLayer(`${key}-fill`));
+  if (cfg.cluster) {
+    return Boolean(
+      map.getLayer(`${key}-points`) || map.getLayer(`${key}-clusters`)
+    );
+  }
+  return Boolean(map.getLayer(`${key}-points`));
+}
 
 /* Formatters */
 
@@ -898,7 +947,8 @@ function InfraLegend({
         poiLayers.ntm_routes ||
         poiLayers.fta_admin_boundaries ||
         poiLayers.faf5_truck_lanes ||
-        poiLayers.telecom_infrastructure) && (
+        poiLayers.telecom_infrastructure ||
+        poiLayers.public_schools_2223) && (
         <div
           className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left"
           onWheelCapture={(e) => {
@@ -1063,6 +1113,23 @@ function InfraLegend({
               </span>{" "}
               FCC-derived cellular tower sites (archived source snapshot).
               Clusters summarize dense markets; zoom in for individual towers.
+            </div>
+          ) : null}
+          {poiLayers.public_schools_2223 ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">
+                Public schools:
+              </span>{" "}
+              NCES EDGE public school locations (2022–23 CCD). Source:{" "}
+              <a
+                href="https://catalog.data.gov/dataset/public-school-locations-2022-23"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#93c5fd] underline underline-offset-2"
+              >
+                Data.gov
+              </a>
+              . Clusters at low zoom; zoom in for individual schools.
             </div>
           ) : null}
         </div>
@@ -1628,6 +1695,7 @@ export default function App() {
   );
   /** Tracks which infrastructure layer keys have been fetched + added to the map */
   const poiKeysLoadedRef = useRef(new Set());
+  const loadPoiInfrastructureRef = useRef(null);
   const lastPoiSelectionRef = useRef(
     Object.fromEntries(Object.keys(POI_CONFIG).map((k) => [k, false]))
   );
@@ -1814,10 +1882,27 @@ export default function App() {
         map.setBearing(0);
         map.setProjection("mercator");
         mapRef.current = map;
+        poiKeysLoadedRef.current.clear();
+        queueMicrotask(() => {
+          const keys = Object.keys(POI_CONFIG).filter(
+            (k) => poiLayersRef.current[k]
+          );
+          if (keys.length) void loadPoiInfrastructureRef.current?.(keys);
+        });
+
+        map.on("style.load", () => {
+          if (cancelled) return;
+          poiKeysLoadedRef.current.clear();
+          const keys = Object.keys(POI_CONFIG).filter(
+            (k) => poiLayersRef.current[k]
+          );
+          if (keys.length) void loadPoiInfrastructureRef.current?.(keys);
+        });
 
         map.on("error", (e) => {
           const msg = e?.error?.message || "Map could not load a tile or resource.";
           if (import.meta.env.DEV) console.warn("[mapbox]", e.error);
+          if (msg.includes("does not exist in the map's style")) return;
           showToast(`Map: ${msg}`, 4500);
         });
 
@@ -2452,9 +2537,23 @@ export default function App() {
       const map = mapRef.current;
       if (!map) return;
 
-      const keysToLoad = [...new Set(requestedKeys)].filter(
-        (k) => POI_CONFIG[k] && !poiKeysLoadedRef.current.has(k)
-      );
+      const keysToLoad = [...new Set(requestedKeys)].filter((k) => {
+        if (!POI_CONFIG[k]) return false;
+        if (
+          poiKeysLoadedRef.current.has(k) &&
+          poiInfrastructureLayersPresent(map, k)
+        ) {
+          return false;
+        }
+        if (
+          poiKeysLoadedRef.current.has(k) &&
+          !poiInfrastructureLayersPresent(map, k)
+        ) {
+          poiKeysLoadedRef.current.delete(k);
+          teardownPoiInfrastructureLayers(map, k);
+        }
+        return true;
+      });
       if (!keysToLoad.length) return;
 
       if (!map.loaded())
@@ -2467,11 +2566,12 @@ export default function App() {
           "fta_admin_boundaries",
           "faf5_truck_lanes",
           "telecom_infrastructure",
+          "public_schools_2223",
         ].includes(k)
       );
       if (slow) {
         showToast(
-          "Loading USDOT layers (first request can take 20–90s while the API fetches Esri data; repeats use server cache)…",
+          "Loading infrastructure layers (first request can take 20–90s while the API fetches data; repeats use server cache)…",
           8000
         );
       }
@@ -2484,7 +2584,8 @@ export default function App() {
             key === "ntd_reporters_2024" ||
             key === "fta_admin_boundaries" ||
             key === "faf5_truck_lanes" ||
-            key === "telecom_infrastructure";
+            key === "telecom_infrastructure" ||
+            key === "public_schools_2223";
           return apiFetchWithRetry(
             cfg.endpoint,
             {},
@@ -2896,6 +2997,12 @@ export default function App() {
                     f.properties.Callsign ||
                     f.properties.name ||
                     "Telecom Tower"
+                : key === "public_schools_2223"
+                  ? f.properties.NAME ||
+                    f.properties.SCH_NAME ||
+                    f.properties.SCHNAME ||
+                    f.properties.name ||
+                    "Public school"
                 : f.properties.name || config.label;
             const sub =
               key === "ntd_reporters_2024"
@@ -2909,6 +3016,17 @@ export default function App() {
                     ]
                       .filter(Boolean)
                       .join(", ") || config.label
+                : key === "public_schools_2223"
+                  ? [
+                      [f.properties.CITY, f.properties.STATE]
+                        .filter(Boolean)
+                        .join(", "),
+                      f.properties.NCESSCH
+                        ? `NCES ${f.properties.NCESSCH}`
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || config.label
                 : config.label;
             new Mbx.Popup({ closeButton: true, maxWidth: "260px" })
               .setLngLat(e.lngLat)
@@ -2975,6 +3093,10 @@ export default function App() {
     },
     [showToast]
   );
+
+  useEffect(() => {
+    loadPoiInfrastructureRef.current = loadPoiInfrastructure;
+  }, [loadPoiInfrastructure]);
 
   const handlePoiToggle = (key) => {
     setPoiLayers((prev) => {

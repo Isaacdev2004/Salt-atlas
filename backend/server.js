@@ -524,6 +524,23 @@ app.get("/api/telecom_infrastructure", (req, res) =>
 );
 
 /**
+ * NCES public school locations (2022–23 CCD), via official MapServer.
+ * @see https://catalog.data.gov/dataset/public-school-locations-2022-23
+ */
+app.get("/api/public_schools_2223", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.nces_public_schools_2223, {
+    maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 130000),
+    outFields: (
+      process.env.ESRI_NCES_OUTFIELDS ||
+      "NAME,NCESSCH,LEAID,STREET,CITY,STATE,ZIP,LAT,LON"
+    ).trim(),
+    quantizeCoordinateDecimals: Number(
+      process.env.ESRI_NCES_COORD_DECIMALS ?? 5
+    ),
+  })
+);
+
+/**
  * FAF5 truck lanes (OD-style)
  * Build top inter-zone links from FAF network border pairs, then draw straight
  * lines between FAF region centroids. This prioritizes national performance.
