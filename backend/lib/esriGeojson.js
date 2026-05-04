@@ -14,12 +14,13 @@ const DEFAULT_TTL_MS = Number(process.env.ESRI_CACHE_TTL_MS ?? 6 * 60 * 60 * 100
 const ESRI_FETCH_TIMEOUT_MS = Number(process.env.ESRI_FETCH_TIMEOUT_MS ?? 120000);
 const ESRI_PAGE_RETRIES = Number(process.env.ESRI_PAGE_RETRIES ?? 3);
 /**
- * Esri pages fetched in parallel (each ≤2000 features). Default **1** (sequential):
- * parallel bursts often trigger throttling or proxy timeouts; set 3–4 only on capable hosts.
+ * Esri pages fetched in parallel (each ≤2000 features). Default **2**:
+ * improves first-load latency while staying conservative for ArcGIS throttling.
+ * Set 1 for maximum stability, or 3–4 on capable hosts.
  */
 const ESRI_PARALLEL_PAGES = Math.min(
   8,
-  Math.max(1, Number(process.env.ESRI_PARALLEL_PAGES ?? 1))
+  Math.max(1, Number(process.env.ESRI_PARALLEL_PAGES ?? 2))
 );
 
 /** Official USDOT-hosted FeatureServer layers (same as reference webmap). */
