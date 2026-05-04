@@ -530,8 +530,8 @@ app.get("/api/telecom_infrastructure", (req, res) =>
  */
 app.get("/api/public_schools_2223", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.nces_public_schools_2223, {
-    // Preserve nationwide spread/coverage while keeping payload bounded.
-    maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 100000),
+    // Keep broad nationwide coverage by default; tune down via env only if needed.
+    maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 130000),
     outFields: (
       process.env.ESRI_NCES_OUTFIELDS ||
       "NAME,NCESSCH,LEAID,STREET,CITY,STATE,ZIP,LAT,LON"
@@ -565,8 +565,8 @@ app.get("/api/hospitals_medical_centers", (req, res) =>
  */
 app.get("/api/child_care_centers", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.child_care_centers, {
-    // Higher default to avoid sparse national distribution in presentation views.
-    maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 80000),
+    // Source count is ~132k; default above that avoids truncation/missing regions.
+    maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 140000),
     outFields: (
       process.env.ESRI_CHILDCARE_OUTFIELDS ||
       "NAME,ADDRESS,CITY,STATE,ZIP,TYPE,STATUS,COUNTY"
