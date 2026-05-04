@@ -515,7 +515,8 @@ app.get("/api/fta_admin_boundaries", (req, res) =>
 /** FCC telecom infrastructure (public ArcGIS layer, currently archived by source). */
 app.get("/api/telecom_infrastructure", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.fcc_cell_towers, {
-    maxFeatures: Number(process.env.ESRI_FCC_TOWERS_MAX ?? 120000),
+    // Keep initial nationwide loads responsive; raise via env if needed.
+    maxFeatures: Number(process.env.ESRI_FCC_TOWERS_MAX ?? 45000),
     outFields: "OBJECTID,Licensee,Callsign,LocCity,LocCounty,LocState,TowReg,StrucType,LicStatus,latdec,londec",
     returnGeometry: true,
     responseFormat: "json",
@@ -529,7 +530,8 @@ app.get("/api/telecom_infrastructure", (req, res) =>
  */
 app.get("/api/public_schools_2223", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.nces_public_schools_2223, {
-    maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 130000),
+    // National school points are large; cap to improve first paint time.
+    maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 60000),
     outFields: (
       process.env.ESRI_NCES_OUTFIELDS ||
       "NAME,NCESSCH,LEAID,STREET,CITY,STATE,ZIP,LAT,LON"
@@ -546,7 +548,7 @@ app.get("/api/public_schools_2223", (req, res) =>
  */
 app.get("/api/hospitals_medical_centers", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.hospitals_medical_centers, {
-    maxFeatures: Number(process.env.ESRI_HOSPITALS_MAX ?? 80000),
+    maxFeatures: Number(process.env.ESRI_HOSPITALS_MAX ?? 35000),
     outFields: (
       process.env.ESRI_HOSPITALS_OUTFIELDS ||
       "NAME,ADDRESS,CITY,STATE,ZIPCODE,FTYPE,FCODE"
@@ -563,7 +565,7 @@ app.get("/api/hospitals_medical_centers", (req, res) =>
  */
 app.get("/api/child_care_centers", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.child_care_centers, {
-    maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 100000),
+    maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 40000),
     outFields: (
       process.env.ESRI_CHILDCARE_OUTFIELDS ||
       "NAME,ADDRESS,CITY,STATE,ZIP,TYPE,STATUS,COUNTY"
