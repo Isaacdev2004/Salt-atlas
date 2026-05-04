@@ -541,6 +541,40 @@ app.get("/api/public_schools_2223", (req, res) =>
 );
 
 /**
+ * Hospitals & medical centers (USGS NGDA structures — federal ArcGIS layer).
+ * @see https://hub.arcgis.com/datasets/fedmaps::hospitals-medical-centers/explore
+ */
+app.get("/api/hospitals_medical_centers", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.hospitals_medical_centers, {
+    maxFeatures: Number(process.env.ESRI_HOSPITALS_MAX ?? 80000),
+    outFields: (
+      process.env.ESRI_HOSPITALS_OUTFIELDS ||
+      "NAME,ADDRESS,CITY,STATE,ZIPCODE,FTYPE,FCODE"
+    ).trim(),
+    quantizeCoordinateDecimals: Number(
+      process.env.ESRI_HOSPITALS_COORD_DECIMALS ?? 5
+    ),
+  })
+);
+
+/**
+ * Child care centers (center-based day care; archived federal layer).
+ * @see https://www.arcgis.com/home/item.html?id=2b5fb973bdd94bd985039b69da1f0424
+ */
+app.get("/api/child_care_centers", (req, res) =>
+  serveEsriGeoJson(req, res, SERVICES.child_care_centers, {
+    maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 100000),
+    outFields: (
+      process.env.ESRI_CHILDCARE_OUTFIELDS ||
+      "NAME,ADDRESS,CITY,STATE,ZIP,TYPE,STATUS,COUNTY"
+    ).trim(),
+    quantizeCoordinateDecimals: Number(
+      process.env.ESRI_CHILDCARE_COORD_DECIMALS ?? 5
+    ),
+  })
+);
+
+/**
  * FAF5 truck lanes (OD-style)
  * Build top inter-zone links from FAF network border pairs, then draw straight
  * lines between FAF region centroids. This prioritizes national performance.

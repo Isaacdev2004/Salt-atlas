@@ -43,6 +43,12 @@ const SERVICES = {
   /** NCES EDGE — Public school point locations (2022–23 CCD), MapServer layer 0 */
   nces_public_schools_2223:
     "https://nces.ed.gov/opengis/rest/services/K12_School_Locations/EDGE_GEOCODE_PUBLICSCH_2223/MapServer/0",
+  /** USGS NGDA hospitals / medical centers (layer 0 of federal medical & emergency structures). */
+  hospitals_medical_centers:
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Structures_Medical_Emergency_Response_v1/FeatureServer/0",
+  /** HHS-derived child care centers (center-based day care; archived federal layer). */
+  child_care_centers:
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Child_Care_Centers_(Archive)/FeatureServer/0",
 };
 
 function cachePath(key) {

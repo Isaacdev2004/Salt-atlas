@@ -176,14 +176,14 @@ export async function apiFetchWithRetry(path, fetchOpts = {}, retryOpts = {}) {
  * Auth bootstrap: same-origin `/api/auth-status` can hang on cold Render / flaky networks.
  * Uses per-attempt timeout so the UI never stays on “Checking access…” indefinitely.
  * @param {object} [opts]
- * @param {number} [opts.maxAttempts=5]
- * @param {number} [opts.delayMs=1000]
- * @param {number} [opts.timeoutMs=12000]
+ * @param {number} [opts.maxAttempts=3]
+ * @param {number} [opts.delayMs=700]
+ * @param {number} [opts.timeoutMs=8000]
  */
 export async function fetchAuthStatusWithRetry(opts = {}) {
-  const maxAttempts = opts.maxAttempts ?? 5;
-  const delayMs = opts.delayMs ?? 1000;
-  const timeoutMs = opts.timeoutMs ?? 12000;
+  const maxAttempts = opts.maxAttempts ?? 3;
+  const delayMs = opts.delayMs ?? 700;
+  const timeoutMs = opts.timeoutMs ?? 8000;
   const base = getApiBase();
   const url = `${base.replace(/\/$/, "")}/api/auth-status`;
   let lastErr = null;

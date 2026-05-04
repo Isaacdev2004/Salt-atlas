@@ -146,7 +146,7 @@ const POI_CONFIG = {
   },
   rail: {
     label: "Rail Terminals",
-    color: "#a855f7",
+    color: "#b45309",
     endpoint: "/api/rail",
     kind: "cluster",
     cluster: true,
@@ -221,6 +221,20 @@ const POI_CONFIG = {
     label: "Public Schools (NCES 2022–23)",
     color: "#8b5cf6",
     endpoint: "/api/public_schools_2223",
+    kind: "cluster",
+    cluster: true,
+  },
+  hospitals_medical_centers: {
+    label: "Hospitals & Medical Centers",
+    color: "#be123c",
+    endpoint: "/api/hospitals_medical_centers",
+    kind: "cluster",
+    cluster: true,
+  },
+  child_care_centers: {
+    label: "Child Care Centers (Day Care)",
+    color: "#ec4899",
+    endpoint: "/api/child_care_centers",
     kind: "cluster",
     cluster: true,
   },
@@ -948,7 +962,9 @@ function InfraLegend({
         poiLayers.fta_admin_boundaries ||
         poiLayers.faf5_truck_lanes ||
         poiLayers.telecom_infrastructure ||
-        poiLayers.public_schools_2223) && (
+        poiLayers.public_schools_2223 ||
+        poiLayers.hospitals_medical_centers ||
+        poiLayers.child_care_centers) && (
         <div
           className="mt-3 pt-3 border-t border-[rgba(196,160,80,0.22)] space-y-2.5 text-left"
           onWheelCapture={(e) => {
@@ -1130,6 +1146,38 @@ function InfraLegend({
                 Data.gov
               </a>
               . Clusters at low zoom; zoom in for individual schools.
+            </div>
+          ) : null}
+          {poiLayers.hospitals_medical_centers ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">Hospitals:</span>{" "}
+              USGS NGDA hospital / medical center points (federal ArcGIS).{" "}
+              <a
+                href="https://hub.arcgis.com/datasets/fedmaps::hospitals-medical-centers/explore"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#93c5fd] underline underline-offset-2"
+              >
+                Dataset
+              </a>
+              .
+            </div>
+          ) : null}
+          {poiLayers.child_care_centers ? (
+            <div className="text-[0.65rem] leading-snug text-[rgba(240,236,227,0.62)]">
+              <span className="text-[#c4a050] font-semibold">
+                Child care:
+              </span>{" "}
+              Center-based day care locations (archived federal layer).{" "}
+              <a
+                href="https://www.arcgis.com/home/item.html?id=2b5fb973bdd94bd985039b69da1f0424"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#93c5fd] underline underline-offset-2"
+              >
+                ArcGIS item
+              </a>
+              .
             </div>
           ) : null}
         </div>
@@ -1769,7 +1817,12 @@ export default function App() {
     let cancelled = false;
     (async () => {
       try {
-        const r = await fetchAuthStatusWithRetry();
+        const hasToken = Boolean(getSessionToken());
+        const r = await fetchAuthStatusWithRetry(
+          hasToken
+            ? { maxAttempts: 2, timeoutMs: 5000, delayMs: 350 }
+            : { maxAttempts: 3, timeoutMs: 8000, delayMs: 700 }
+        );
         const j = await r.json().catch(() => ({}));
         if (cancelled) return;
         const required = Boolean(j.authRequired);
@@ -2567,6 +2620,8 @@ export default function App() {
           "faf5_truck_lanes",
           "telecom_infrastructure",
           "public_schools_2223",
+          "hospitals_medical_centers",
+          "child_care_centers",
         ].includes(k)
       );
       if (slow) {
@@ -2585,7 +2640,9 @@ export default function App() {
             key === "fta_admin_boundaries" ||
             key === "faf5_truck_lanes" ||
             key === "telecom_infrastructure" ||
-            key === "public_schools_2223";
+            key === "public_schools_2223" ||
+            key === "hospitals_medical_centers" ||
+            key === "child_care_centers";
           return apiFetchWithRetry(
             cfg.endpoint,
             {},
@@ -2999,6 +3056,14 @@ export default function App() {
                     f.properties.SCHNAME ||
                     f.properties.name ||
                     "Public school"
+                : key === "hospitals_medical_centers"
+                  ? f.properties.NAME ||
+                    f.properties.name ||
+                    "Hospital / medical center"
+                : key === "child_care_centers"
+                  ? f.properties.NAME ||
+                    f.properties.name ||
+                    "Child care center"
                 : f.properties.name || config.label;
             const sub =
               key === "ntd_reporters_2024"
@@ -3020,6 +3085,24 @@ export default function App() {
                       f.properties.NCESSCH
                         ? `NCES ${f.properties.NCESSCH}`
                         : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || config.label
+                : key === "hospitals_medical_centers"
+                  ? [
+                      [f.properties.CITY, f.properties.STATE]
+                        .filter(Boolean)
+                        .join(", "),
+                      f.properties.ZIPCODE,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || config.label
+                : key === "child_care_centers"
+                  ? [
+                      [f.properties.CITY, f.properties.STATE]
+                        .filter(Boolean)
+                        .join(", "),
+                      f.properties.TYPE,
                     ]
                       .filter(Boolean)
                       .join(" · ") || config.label
