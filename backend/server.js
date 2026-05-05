@@ -480,6 +480,171 @@ async function serveEsriGeoJson(req, res, serviceUrl, opts = {}) {
   }
 }
 
+async function fetchEsriCount(serviceUrl, where = "1=1") {
+  const q = new URLSearchParams({
+    where,
+    returnCountOnly: "true",
+    f: "json",
+  });
+  const url = `${serviceUrl}/query?${q.toString()}`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(
+    () => ctrl.abort(),
+    Number(process.env.ESRI_COUNT_TIMEOUT_MS ?? 25000)
+  );
+  try {
+    const resp = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: ctrl.signal,
+    });
+    if (!resp.ok) {
+      const txt = await resp.text();
+      throw new Error(`HTTP ${resp.status}: ${txt.slice(0, 240)}`);
+    }
+    const json = await resp.json();
+    if (json?.error) throw new Error(json.error.message || "Esri count error");
+    const n = Number(json?.count);
+    if (!Number.isFinite(n)) throw new Error("Invalid count payload");
+    return n;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Quick runtime audit of returned vs source counts (for coverage/perf diagnostics). */
+app.get("/api/layer-health", async (req, res) => {
+  const summaries = [];
+  const push = (row) => summaries.push(row);
+  try {
+    const localLayers = [
+      "airports",
+      "ports",
+      "rail",
+      "warehouses",
+      "manufacturing",
+    ];
+    for (const layer of localLayers) {
+      try {
+        const data = await loadGeoJSON(layer);
+        const returned = Array.isArray(data?.features) ? data.features.length : 0;
+        push({
+          layer,
+          kind: "local_snapshot",
+          returnedCount: returned,
+          sourceCount: returned,
+          capped: false,
+          cap: null,
+          coverageRatio: 1,
+          sourceUrl: null,
+        });
+      } catch (e) {
+        push({
+          layer,
+          kind: "local_snapshot",
+          error: e.message,
+        });
+      }
+    }
+
+    const esriDefs = [
+      {
+        layer: "ntd_reporters_2024",
+        serviceUrl: SERVICES.ntd_reporters_2024,
+        cap: Number(process.env.ESRI_NTD_MAX ?? 9000),
+      },
+      {
+        layer: "ntm_routes",
+        serviceUrl: SERVICES.ntm_routes,
+        cap: Number(process.env.ESRI_NTM_MAX ?? 5000),
+      },
+      {
+        layer: "fta_admin_boundaries",
+        serviceUrl: SERVICES.fta_admin_uza_2020,
+        cap: Number(process.env.ESRI_FTA_MAX ?? 4000),
+      },
+      {
+        layer: "telecom_infrastructure",
+        serviceUrl: SERVICES.fcc_cell_towers,
+        cap: Number(process.env.ESRI_FCC_TOWERS_MAX ?? 45000),
+      },
+      {
+        layer: "public_schools_2223",
+        serviceUrl: SERVICES.nces_public_schools_2223,
+        cap: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 130000),
+      },
+      {
+        layer: "hospitals_medical_centers",
+        serviceUrl: SERVICES.hospitals_medical_centers,
+        cap: Number(process.env.ESRI_HOSPITALS_MAX ?? 35000),
+      },
+      {
+        layer: "child_care_centers",
+        serviceUrl: SERVICES.child_care_centers,
+        cap: Number(process.env.ESRI_CHILDCARE_MAX ?? 140000),
+      },
+    ];
+
+    const countJobs = esriDefs.map(async (d) => {
+      try {
+        const sourceCount = await fetchEsriCount(d.serviceUrl);
+        const returned = Math.min(d.cap, sourceCount);
+        push({
+          layer: d.layer,
+          kind: "esri_proxy",
+          sourceUrl: d.serviceUrl,
+          sourceCount,
+          returnedCount: returned,
+          cap: d.cap,
+          capped: sourceCount > d.cap,
+          coverageRatio:
+            sourceCount > 0
+              ? Number((returned / sourceCount).toFixed(4))
+              : 1,
+        });
+      } catch (e) {
+        push({
+          layer: d.layer,
+          kind: "esri_proxy",
+          sourceUrl: d.serviceUrl,
+          cap: d.cap,
+          error: e.message,
+        });
+      }
+    });
+    await Promise.all(countJobs);
+
+    try {
+      const raw = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "data/derived/faf5_truck_od_2024.geojson"),
+          "utf8"
+        )
+      );
+      const c = Array.isArray(raw?.features) ? raw.features.length : 0;
+      push({
+        layer: "faf5_truck_lanes",
+        kind: "derived_snapshot",
+        sourceUrl: "https://www.bts.gov/faf/faf5-database",
+        sourceCount: c,
+        returnedCount: c,
+        cap: null,
+        capped: false,
+        coverageRatio: 1,
+      });
+    } catch (e) {
+      push({ layer: "faf5_truck_lanes", kind: "derived_snapshot", error: e.message });
+    }
+
+    return res.json({
+      generatedAt: new Date().toISOString(),
+      note: "coverageRatio = returnedCount/sourceCount for current backend settings",
+      layers: summaries.sort((a, b) => a.layer.localeCompare(b.layer)),
+    });
+  } catch (e) {
+    return res.status(500).json({ error: "Failed to compute layer health", detail: e.message });
+  }
+});
+
 app.get("/api/ntd_reporters_2024", (req, res) =>
   serveEsriGeoJson(req, res, SERVICES.ntd_reporters_2024, {
     maxFeatures: Number(process.env.ESRI_NTD_MAX ?? 9000),
