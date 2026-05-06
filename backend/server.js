@@ -699,10 +699,11 @@ app.get("/api/public_schools_2223", (req, res) =>
     maxFeatures: Number(process.env.ESRI_NCES_SCHOOLS_MAX ?? 130000),
     outFields: (
       process.env.ESRI_NCES_OUTFIELDS ||
-      "NAME,NCESSCH,LEAID,STREET,CITY,STATE,ZIP,LAT,LON"
+      // Keep payload small; the map only needs name + city/state + id for popups.
+      "NAME,NCESSCH,CITY,STATE"
     ).trim(),
     quantizeCoordinateDecimals: Number(
-      process.env.ESRI_NCES_COORD_DECIMALS ?? 5
+      process.env.ESRI_NCES_COORD_DECIMALS ?? 4
     ),
   })
 );
@@ -734,10 +735,11 @@ app.get("/api/child_care_centers", (req, res) =>
     maxFeatures: Number(process.env.ESRI_CHILDCARE_MAX ?? 140000),
     outFields: (
       process.env.ESRI_CHILDCARE_OUTFIELDS ||
-      "NAME,ADDRESS,CITY,STATE,ZIP,TYPE,STATUS,COUNTY"
+      // Keep payload small; enough for map popups and filtering later if needed.
+      "NAME,CITY,STATE,TYPE"
     ).trim(),
     quantizeCoordinateDecimals: Number(
-      process.env.ESRI_CHILDCARE_COORD_DECIMALS ?? 5
+      process.env.ESRI_CHILDCARE_COORD_DECIMALS ?? 4
     ),
   })
 );
