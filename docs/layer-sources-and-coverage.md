@@ -1,6 +1,6 @@
 # Salt Atlas — Layer Sources & Coverage
 
-Last updated: 2026-05-06
+Last updated: 2026-05-12
 
 This document lists:
 
